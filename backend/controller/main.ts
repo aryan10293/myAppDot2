@@ -83,7 +83,7 @@ let auth = {
             // this is the login user (req as any).user.sub) code
             
             const getUser = await pool.query('SELECT * FROM users WHERE id = $1', [(req as any).user.sub]);
-            res.json({ message: "Welcome back! " + getUser.rows[0].firstname, user: (req as any).user });
+            res.json({ message: "Welcome back! " + getUser.rows[0].firstname, user: getUser.rows[0] });
           
         } catch (error) {
             console.log(error);
