@@ -4,7 +4,7 @@ import hashPassword from "../config/hashPassword";
 
 
 // password will end being hashed in the future
-export async function createUser(firstName:string, lastName:string, email:string, password:string, age:number) {
+export async function createUser(firstName:string, lastName:string, email:string, password:string) {
     const id = uuidv4();
     const hashedPassword = await hashPassword(password);
     if (!hashedPassword) {
@@ -12,11 +12,11 @@ export async function createUser(firstName:string, lastName:string, email:string
     }
     // insert user into past needs to look exactly how it does in the createTables function
   const query = `
-    INSERT INTO users (id, firstName, lastName, email, password, age)
-    VALUES ($1, $2, $3, $4, $5, $6)
+    INSERT INTO users (id, firstName, lastName, email, password)
+    VALUES ($1, $2, $3, $4, $5)
     RETURNING *;
   `;
-  const values = [id, firstName, lastName, email, hashedPassword, age];
+  const values = [id, firstName, lastName, email, hashedPassword];
   const result = await pool.query(query, values);
   return result.rows[0];
 }

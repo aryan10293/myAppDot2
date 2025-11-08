@@ -8,27 +8,15 @@ import verifyPassword from "../config/verfiyPassword";
 import { createUser } from "../model/createUser";
 import jwt from "../config/jwt";
 import validator from "validator";
-import { get } from "http";
 
 let auth = {
-    search: async (req:Request, res:Response) => {
-        let randomNumber: number = Math.random();
-        let random: boolean = randomNumber >= 0.5 ? true : false;
-        if(random){
-            res.status(400).send({status: '400', error:'no search text provided'});
-            return;
-        } else {
-            res.status(200).send({status: '200', message: 'search text provided'});
-            return;
-        }
-    },
-    signUp: async (req:Request, res:Response) => {
+    register: async (req:Request, res:Response) => {
         try {
-            const { email,firstName, password, lastName, age, confirmPassword} = req.body;
+            const { email,firstName, password, lastName, confirmPassword} = req.body;
             const doesEmailExist = await  findUserEmail(email);
             if(doesEmailExist){
                 res.status(400).send({status:"400", error:"email already in use"})
-            } else if(!email || !password || !firstName|| !lastName || !age){
+            } else if(!email || !password || !firstName|| !lastName ){
                 res.status(400).send({status:"400", error:"missing fields in form"})
             } else if (password !== confirmPassword) {
                 // add validator.isStrongPassword(password) in the future
@@ -39,14 +27,15 @@ let auth = {
             } else if(!validator.isEmail(email)){
                 res.status(400).send({status:"400", error:"invalid email"})
             } else {
-                const user = await createUser(firstName, lastName, email, password, age);
-                res.status(200).send({status:"200", message:"user signed up successfully"})
+                const user = await createUser(firstName, lastName, email, password);
+                res.status(201).send({status:"201", message:"user signed up successfully"})
             }
         } catch (error) {
+            console.log(error);
             res.status(500).send({ status: '500', error: 'Internal server error' });
         }
     },
-    signIn: async (req:Request, res:Response) => {
+    login: async (req:Request, res:Response) => {
         try {
             const { email, password } = req.body;
             const user = await findUserEmail(email);
@@ -77,6 +66,7 @@ let auth = {
                 
             } 
         } catch (error) {
+            console.log(error);
             res.status(500).send({ status: '500', error: 'Internal server error' });
         }
     },
@@ -88,16 +78,7 @@ let auth = {
         });
         res.status(200).send({ message: "Logged out successfully" });
     },
-    testing: async (req:Request, res:Response) => {
-        try {
-            // users equals the name of the table in your database
-            const result = await pool.query("SELECT * FROM users");
-            res.json(result.rows);
-        } catch (err) {
-            console.error(err);
-            res.status(500).send("Server Error");
-        }
-    }, getProfile: async (req:Request, res:Response) => {
+    getProfile: async (req:Request, res:Response) => {
         try {
             // this is the login user (req as any).user.sub) code
             
