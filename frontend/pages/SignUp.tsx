@@ -1,7 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function SignUp() {
+  const navigate = useNavigate();
     const [firstName, setFirstName] = React.useState("");
     const [lastName, setLastName] = React.useState("");
     const [email, setEmail] = React.useState("");
@@ -33,6 +35,7 @@ export default function SignUp() {
         const data = await response.json();
         console.log(data);
          // should be redirect to  dashboard
+         navigate('/profile');
         alert("Registration successful!");
 
     } else {

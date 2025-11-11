@@ -92,7 +92,7 @@ export default function Landingpage() {
 
           <div className="mt-8 flex flex-col items-center gap-3">
             <div className="flex sm:flex-row sm:gap-4 gap-2 items-center">
-                <Link to="/signup">
+                <Link to="/register">
                     <button
                     type="button"
                     className="inline-flex items-center gap-2 px-5 py-3 bg-indigo-600 hover:bg-indigo-700 active:scale-[.99] text-white font-medium rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-500"

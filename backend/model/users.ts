@@ -8,7 +8,8 @@ const createTables = async () => {
                 email VARCHAR(255) NOT NULL,
                 firstName VARCHAR(255) NOT NULL,
                 lastName VARCHAR(255) NOT NULL,
-                password VARCHAR(255) NOT NULL
+                password VARCHAR(255) NOT NULL,
+                streak INTEGER NOT NULL DEFAULT 0
             );
         `);
     } catch (error) {

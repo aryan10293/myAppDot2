@@ -56,7 +56,7 @@ let auth = {
                     httpOnly: true, // cannot be accessed by JS
                     secure: false, // process.env.NODE_ENV === "production", // only HTTPS in production
                     sameSite: "strict", // prevents CSRF
-                    maxAge: 15 * 60 * 1000, // 15 minutes
+                    maxAge: 100 * 60 * 1000, // 15 minutes
                 });
 
                 res.status(200).send({ status: '200', message: 'user signed in successfully' });

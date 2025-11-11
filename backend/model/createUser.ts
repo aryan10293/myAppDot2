@@ -12,11 +12,11 @@ export async function createUser(firstName:string, lastName:string, email:string
     }
     // insert user into past needs to look exactly how it does in the createTables function
   const query = `
-    INSERT INTO users (id, firstName, lastName, email, password)
-    VALUES ($1, $2, $3, $4, $5)
+    INSERT INTO users (id, firstName, lastName, email, password, streak)
+    VALUES ($1, $2, $3, $4, $5, $6)
     RETURNING *;
   `;
-  const values = [id, firstName, lastName, email, hashedPassword];
+  const values = [id, firstName, lastName, email, hashedPassword, 0];
   const result = await pool.query(query, values);
   return result.rows[0];
 }
