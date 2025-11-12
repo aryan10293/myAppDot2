@@ -18,37 +18,61 @@ let interactions = {
             res.status(500).send({ status: '500', error: 'Internal server error' });
         }
       },
-      checkIn: async  (req:Request, res:Response) => {
+      checkIn: async (req: Request, res: Response) => {
+        // task for tomorrow
+        // if user goes mor ethan one day with out checking in set strek to 0
+        // if some
         try {
-            const user = await pool.query('SELECT * FROM users WHERE id = $1', [(req as any).user.sub]);
-            const lastCheckIn: string  = user.rows[0].last_checkin + "";
-            const parts = lastCheckIn.split(" ");
-            const idkWhatToCallThis = (parts[1] ?? "") + (parts[2] ?? "") + (parts[3] ?? "");
-            let date: string | string[] = new Date()+"";
-            date = date.split(" ")
-            const getTodaysDate = (date[1] ?? "") + (date[2] ?? "") + (date[3] ?? "")
-            console.log(getTodaysDate);
-            console.log(idkWhatToCallThis)
+            const userId = (req as any).user.sub;
 
-            if(idkWhatToCallThis === getTodaysDate){
-                console.log("this may work for now")
+            
+            const { rows } = await pool.query(
+            "SELECT id, streak, last_checkin, time_zone FROM users WHERE id = $1",
+            [userId]
+            );
+            const user = rows[0];
+            if (!user) return res.status(404).json({ message: "User not found" });
+
+            
+            const tz = user.timezone || "UTC";
+            const lastLocal = new Date(user.last_checkin).toLocaleDateString("en-CA", {
+            timeZone: tz,
+            }); 
+            const nowLocal = new Date().toLocaleDateString("en-CA", { timeZone: tz });
+
+            console.log({ tz, lastLocal, nowLocal });
+
+            
+            if (lastLocal === nowLocal) {
+            return res.status(200).json({
+                updated: false,
+                message: "Already checked in today.",
+                streak: user.streak,
+            });
             }
-            
-            const query = `
-                UPDATE users 
-                SET streak = $1 
-                WHERE id = $2
-                RETURNING *;
-            `;
 
-            const values = [user.rows[0].streak + 1, user.rows[0].id];
-            const result = await pool.query(query, values);
             
-            res.status(200).json(result.rows[0]);
+            const updateQuery = `
+            UPDATE users
+            SET streak = $1,
+                last_checkin = NOW()
+            WHERE id = $2
+            RETURNING *;
+            `;
+            const updateValues = [user.streak + 1, user.id];
+            const result = await pool.query(updateQuery, updateValues);
+
+            
+            return res.status(200).json({
+            updated: true,
+            message: "Check-in successful.",
+            ...result.rows[0],
+            });
         } catch (error) {
-            console.log(error);
+            console.error(error);
+            return res.status(500).json({ message: error });
         }
-      }
+    }
 }
 export default interactions
 
