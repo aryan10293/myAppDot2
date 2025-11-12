@@ -19,6 +19,7 @@ const buddies = [
 
 
 export default function Profile(): JSX.Element {
+  // const currentTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const navigate = useNavigate();
   const { data: user, isLoading } = useQuery({
     queryKey: ["user"],
@@ -27,16 +28,19 @@ export default function Profile(): JSX.Element {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
+          "X-User-Timezone": Intl.DateTimeFormat().resolvedOptions().timeZone
         },
         credentials: "include",
       });
       if (response.status === 401) {
         // Not authenticated, redirect to login
+  
         navigate("/login");
         return;
-      }
+      } 
+      
       return response.json();
-    },
+    }
   });
 
 
@@ -56,10 +60,10 @@ export default function Profile(): JSX.Element {
   // if the date is the same as current date do not allow check in 
   // if the date is more than one day passed display a message like "get back on track and check in" 
 
-
   if (isLoading) return <Loading overlay message="Loading profile..." />;
 
   return (
+  
     <div className="min-h-screen bg-slate-50 p-6">
       <main className="max-w-6xl mx-auto">
         <div className="flex items-center justify-between mb-6">

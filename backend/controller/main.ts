@@ -12,7 +12,7 @@ import validator from "validator";
 let auth = {
     register: async (req:Request, res:Response) => {
         try {
-            const { email,firstName, password, lastName, confirmPassword} = req.body;
+            const { email,firstName, password, lastName, confirmPassword, timezone} = req.body;
             const doesEmailExist = await  findUserEmail(email);
             if(doesEmailExist){
                 res.status(400).send({status:"400", error:"email already in use"})
@@ -27,7 +27,7 @@ let auth = {
             } else if(!validator.isEmail(email)){
                 res.status(400).send({status:"400", error:"invalid email"})
             } else {
-                const user = await createUser(firstName, lastName, email, password);
+                const user = await createUser(firstName, lastName, email, password, timezone);
                 res.status(201).send({status:"201", message:"user signed up successfully"})
             }
         } catch (error) {
@@ -47,7 +47,6 @@ let auth = {
             } else if (!verified){
                 res.status(400).send({status:"400", error:"incorrect password"})
             } else {
-                console.log(user, "this is thee user from db");
                 const token = jwt(user.id);
                 // const token = jwt.sign({ sub: user._id }, process.env.SECRET_KEY as string , ) //{ expiresIn: '1m' }
                 // res.status(200).send({ token, newUser: user, status:'200' })
@@ -56,7 +55,7 @@ let auth = {
                     httpOnly: true, // cannot be accessed by JS
                     secure: false, // process.env.NODE_ENV === "production", // only HTTPS in production
                     sameSite: "strict", // prevents CSRF
-                    maxAge: 100 * 60 * 1000, // 15 minutes
+                    maxAge: 1000 * 60 * 60, // 15 minutes
                 });
 
                 res.status(200).send({ status: '200', message: 'user signed in successfully' });
@@ -83,6 +82,7 @@ let auth = {
             // this is the login user (req as any).user.sub) code
             
             const getUser = await pool.query('SELECT * FROM users WHERE id = $1', [(req as any).user.sub]);
+            
             res.json({ message: "Welcome back! " + getUser.rows[0].firstname, user: getUser.rows[0] });
           
         } catch (error) {

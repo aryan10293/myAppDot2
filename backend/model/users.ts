@@ -9,7 +9,10 @@ const createTables = async () => {
                 firstName VARCHAR(255) NOT NULL,
                 lastName VARCHAR(255) NOT NULL,
                 password VARCHAR(255) NOT NULL,
-                streak INTEGER NOT NULL DEFAULT 0
+                time_zone VARCHAR(255) NOT NULL,
+                streak INTEGER NOT NULL DEFAULT 0,
+                last_checkin TIMESTAMPTZ DEFAULT NOW()
+                
             );
         `);
     } catch (error) {

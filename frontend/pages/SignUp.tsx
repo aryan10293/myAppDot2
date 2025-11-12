@@ -12,14 +12,15 @@ export default function SignUp() {
 
   const handleSubmit = async(e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     const response = await fetch('http://localhost:2050/register', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ firstName, lastName, email, password, confirmPassword }),
+      body: JSON.stringify({ firstName, lastName, email, password, confirmPassword, timezone }),
     });
-    console.log(firstName, lastName, email, password)
+    console.log(firstName, lastName, email, password, timezone)
     const data = await response.json();
     if(data.status === "201"){
 

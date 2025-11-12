@@ -3,7 +3,6 @@ import StatCard from './StatCard';
 import { useNavigate } from "react-router-dom";
 import ProgressRing from './ProgressRing';
 function ProfileHeader({user}) {
-  console.log(user)
     const navigate = useNavigate();
     const topGoals =  [
     { id: "g1", title: "Morning stretch", streak: 10 },
