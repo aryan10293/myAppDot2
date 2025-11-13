@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 
-export default function Landingpage() {
+export default function Landingpage(): React.JSX.Element {
   return (
     <div className="min-h-screen bg-gradient-to-b from-indigo-50 via-white to-sky-50 flex items-center justify-center p-6">
       <main className="w-full max-w-4xl">

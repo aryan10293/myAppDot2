@@ -5,9 +5,12 @@ export default function Login() {
     const navigate = useNavigate();
     const [email, setEmail] = React.useState("");
     const [password, setPassword] = React.useState("");
-
+    const [isPasswordCorrect, setIsPasswordCorrect] = React.useState<boolean>(false);
+    const [isEmailCorrect, setIsEmailCorrect] = React.useState<boolean>(false);
 
   const handleSubmit = async(e: React.FormEvent<HTMLFormElement>) => {
+    setIsPasswordCorrect(false);
+    setIsEmailCorrect(false);
     e.preventDefault();
     const response = await fetch('http://localhost:2050/login', {
       method: 'POST',
@@ -17,14 +20,14 @@ export default function Login() {
       credentials: 'include',
       body: JSON.stringify({ email, password }),
     });
-    console.log( email, password)
     const data = await response.json();
     if(data.status === "200"){
-            navigate('/profile');
-         // should be redirect to dashboard
+        navigate('/profile');
         alert("login successful!");
-    } else {
-        console.log(data.message)
+    } else if(data.error === "incorrect password") {
+        setIsPasswordCorrect(true);
+    } else if (data.error === "email not found"){
+        setIsEmailCorrect(true);
     }
 
    
@@ -103,6 +106,14 @@ export default function Login() {
                 className="mt-1 block w-full px-3 py-2 rounded-md border border-gray-200 shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm bg-white"
               />
             </div>
+            {isEmailCorrect && (
+                <p id="password-error" className="mt-2 flex items-start text-sm text-red-600">
+                  <svg className="h-4 w-4 mr-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden>
+                    <path fillRule="evenodd" d="M8.257 3.099c.366-.446.957-.597 1.498-.377a8 8 0 11-2.755 14.13 1 1 0 10.984-1.832 6 6 0 10-1.098-10.68c-.48.23-.655.83-.374 1.27l.745 1.078zm1.743 6.901a1 1 0 10-2 0v3a1 1 0 102 0v-3zm0-5a1 1 0 10-2 0 1 1 0 002 0z" clipRule="evenodd" />
+                  </svg>
+                  User not found — please check email or create account.
+                </p>
+              )}
 
             <div>
               <label
@@ -121,6 +132,14 @@ export default function Login() {
                 placeholder="Create a password"
                 className="mt-1 block w-full px-3 py-2 rounded-md border border-gray-200 shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm bg-white"
               />
+              {isPasswordCorrect && (
+                <p id="password-error" className="mt-2 flex items-start text-sm text-red-600">
+                  <svg className="h-4 w-4 mr-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden>
+                    <path fillRule="evenodd" d="M8.257 3.099c.366-.446.957-.597 1.498-.377a8 8 0 11-2.755 14.13 1 1 0 10.984-1.832 6 6 0 10-1.098-10.68c-.48.23-.655.83-.374 1.27l.745 1.078zm1.743 6.901a1 1 0 10-2 0v3a1 1 0 102 0v-3zm0-5a1 1 0 10-2 0 1 1 0 002 0z" clipRule="evenodd" />
+                  </svg>
+                  Incorrect password — please try again or reset it.
+                </p>
+              )}
             </div>
 
             <button

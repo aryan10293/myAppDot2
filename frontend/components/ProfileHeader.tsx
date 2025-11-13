@@ -2,13 +2,39 @@ import React from 'react'
 import StatCard from './StatCard';
 import { useNavigate } from "react-router-dom";
 import ProgressRing from './ProgressRing';
-function ProfileHeader({user}) {
+import { useQuery } from "@tanstack/react-query";
+function ProfileHeader({user}): React.JSX.Element {
     const navigate = useNavigate();
     const topGoals =  [
     { id: "g1", title: "Morning stretch", streak: 10 },
     { id: "g2", title: "Read 10 pages", streak: 3 },
     { id: "g3", title: "Walk 15 min", streak: 7 },
   ];
+  const { data:idk, isLoading } = useQuery({
+    queryKey: ['idk'],
+    queryFn: async () => {
+      const response = await fetch("http://localhost:2050/checkforcheckin", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+      console.log(response)
+      return await response.json()
+    }
+  })
+
+ 
+//console.log(idk)
+    if (isLoading) {
+      return <span>Loading...</span>
+    }
+    if(idk.reset){
+      alert(idk.message)
+    }
+
+  console.log(user, "coming from profile header");
   return (
     <div className="bg-white rounded-2xl border border-gray-100 p-6 flex flex-col sm:flex-row gap-6 items-center">
               {/* Avatar */}
@@ -21,7 +47,6 @@ function ProfileHeader({user}) {
                   </div>
                 )}
               </div>
-
               <div className="flex-1">
                 <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
                   <div>

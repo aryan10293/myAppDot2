@@ -39,6 +39,10 @@ let auth = {
         try {
             const { email, password } = req.body;
             const user = await findUserEmail(email);
+            
+            if(!user) {
+                return res.status(400).send({status:"400", error:"email not found"})
+            } 
             const verified = await verifyPassword(user.password, password);
             if( !email || !password){
                 res.status(400).send({status:"400", error:"missing fields in form"})
@@ -48,20 +52,15 @@ let auth = {
                 res.status(400).send({status:"400", error:"incorrect password"})
             } else {
                 const token = jwt(user.id);
-                // const token = jwt.sign({ sub: user._id }, process.env.SECRET_KEY as string , ) //{ expiresIn: '1m' }
-                // res.status(200).send({ token, newUser: user, status:'200' })
 
                 res.cookie("access_token", token, {
-                    httpOnly: true, // cannot be accessed by JS
+                    httpOnly: true, 
                     secure: false, // process.env.NODE_ENV === "production", // only HTTPS in production
-                    sameSite: "strict", // prevents CSRF
-                    maxAge: 1000 * 60 * 60, // 15 minutes
+                    sameSite: "strict", 
+                    maxAge: 1000 * 60 * 60, 
                 });
 
                 res.status(200).send({ status: '200', message: 'user signed in successfully' });
-                // Here you would normally check the email and password against the database
-                
-                // For demonstration, we assume the user is found and password matches
                 
             } 
         } catch (error) {

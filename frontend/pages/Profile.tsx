@@ -18,7 +18,7 @@ const buddies = [
 
 
 
-export default function Profile(): JSX.Element {
+export default function Profile(): React.JSX.Element {
   // const currentTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const navigate = useNavigate();
   const { data: user, isLoading } = useQuery({
@@ -28,7 +28,6 @@ export default function Profile(): JSX.Element {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          "X-User-Timezone": Intl.DateTimeFormat().resolvedOptions().timeZone
         },
         credentials: "include",
       });

@@ -10,5 +10,6 @@ router.post("/login", main.login);
 router.get("/profile", requireAuth, main.getProfile)
 router.post("/logout", requireAuth, main.logout);
 router.patch("/checkin", requireAuth, interactions.checkIn);
+router.patch("/checkforcheckin", requireAuth, interactions.checkForCheckIn);
 
 export default router;

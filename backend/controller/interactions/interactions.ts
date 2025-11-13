@@ -33,8 +33,8 @@ let interactions = {
 
             const raw = user.last_checkin + ""; // raw
 
-            let checkin = DateTime.fromJSDate(new Date(raw)); 
-            let today = DateTime.fromJSDate(new Date())
+            let checkin: any = DateTime.fromJSDate(new Date(raw)); 
+            let today: any = DateTime.fromJSDate(new Date())
 
             checkin = checkin.toISO().slice(0,10);
             checkin =  DateTime.fromISO(checkin);
@@ -74,6 +74,48 @@ let interactions = {
             console.error(error);
             return res.status(500).json({ message: error });
         }
+    }, 
+    checkForCheckIn: async (req: Request, res: Response) => {
+        const userId = (req as any).user.sub;
+            
+        const { rows } = await pool.query(
+        "SELECT id, streak, last_checkin, time_zone FROM users WHERE id = $1",
+        [userId]
+        );
+
+        const user = rows[0];
+
+        if (!user) return res.status(404).json({ message: "User not found" });
+        const raw = user.last_checkin + ""; 
+
+        let checkin: any = DateTime.fromJSDate(new Date(raw)); 
+        let today: any = DateTime.fromJSDate(new Date())
+
+        checkin = checkin.toISO().slice(0,10);
+        checkin =  DateTime.fromISO(checkin);
+
+        today = today.toISO().slice(0,10);
+        today = DateTime.fromISO(today);
+
+        const diff = today.diff(checkin, 'days').days
+
+        if(diff>1){
+            const updateQuery = `
+                UPDATE users
+                SET streak = $1,
+                    last_checkin = NOW()
+                WHERE id = $2
+                RETURNING *;
+            `;
+            const updateValues = [1, user.id];
+            const result = await pool.query(updateQuery, updateValues);
+            return res.status(200).json({
+                reset: true,
+                message: "Your streak reset after a few missed days, but you’re back in! We’ve checked you in — time to rebuild that streak and keep pushing.",
+                streak: user.streak,
+            });
+        } 
+        return res.status(200).json({message:"no issues found"})
     }
 }
 export default interactions
