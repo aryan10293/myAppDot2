@@ -1,9 +1,9 @@
-import React from 'react'
+import React, {  } from 'react'
 import StatCard from './StatCard';
 import { useNavigate } from "react-router-dom";
 import ProgressRing from './ProgressRing';
 import { useQuery } from "@tanstack/react-query";
-function ProfileHeader({user}): React.JSX.Element {
+function ProfileHeader(props:any): React.JSX.Element {
     const navigate = useNavigate();
     const topGoals =  [
     { id: "g1", title: "Morning stretch", streak: 10 },
@@ -20,13 +20,12 @@ function ProfileHeader({user}): React.JSX.Element {
         },
         credentials: "include",
       });
-      console.log(response)
-      return await response.json()
+      return  response.json()
     }
   })
 
- 
-//console.log(idk)
+
+
     if (isLoading) {
       return <span>Loading...</span>
     }
@@ -34,16 +33,15 @@ function ProfileHeader({user}): React.JSX.Element {
       alert(idk.message)
     }
 
-  console.log(user, "coming from profile header");
   return (
     <div className="bg-white rounded-2xl border border-gray-100 p-6 flex flex-col sm:flex-row gap-6 items-center">
               {/* Avatar */}
               <div className="flex-shrink-0">
-                {user.avatarUrl ?(
-                  <img src={user.avatarUrl} alt={`${user.firstname} avatar`} className="h-28 w-28 rounded-full object-cover" />
+                {props.user.avatarUrl ?(
+                  <img src={props.user.avatarUrl} alt={`${props.user.firstname} avatar`} className="h-28 w-28 rounded-full object-cover" />
                 ) : (
                   <div className="h-28 w-28 rounded-full bg-indigo-100 flex items-center justify-center text-2xl font-bold text-indigo-700">
-                    {user.firstname?.[0] ?? "U"}
+                    {props.user.firstname?.[0] ?? "U"}
                   </div>
                 )}
               </div>
@@ -51,7 +49,7 @@ function ProfileHeader({user}): React.JSX.Element {
                 <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
                   <div>
                     <div className="text-lg font-semibold text-gray-900">
-                      {user.firstname } {user.lastname}
+                      {props.user.firstname } {props.user.lastname}
                       
                     </div>
                             {/* czn enter a a member since date if you want later  */}
@@ -60,7 +58,7 @@ function ProfileHeader({user}): React.JSX.Element {
 
                   <div className="flex gap-3">
                             {/* add soemthing in database that keep track fo streak */}
-                    <StatCard label="Current streak" value={user.streak} />
+                    <StatCard label="Current streak" value={props.update ? props.user.streak +1: props.user.streak} />
                   </div>
                 </div>
 

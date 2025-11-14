@@ -116,6 +116,11 @@ let interactions = {
             });
         } 
         return res.status(200).json({message:"no issues found"})
+    },
+    getGoals: async (req: Request, res: Response) => {
+        const userId = (req as any).user.sub;
+        console.log(userId);
+        res.json({message:"hey does this work"})
     }
 }
 export default interactions

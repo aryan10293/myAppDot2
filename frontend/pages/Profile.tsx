@@ -1,7 +1,8 @@
 import React from "react";
+import { useState } from "react";
 import Loading from "../components/Loading";
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import useUser from "../customHook/user"
 import ProfileHeader from "../components/ProfileHeader";
 import Notes from "../components/Notes";
 import SmallCard from "../components/SmallCard";
@@ -19,28 +20,11 @@ const buddies = [
 
 
 export default function Profile(): React.JSX.Element {
-  // const currentTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const navigate = useNavigate();
-  const { data: user, isLoading } = useQuery({
-    queryKey: ["user"],
-    queryFn: async () => {
-      const response = await fetch("http://localhost:2050/profile", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-      });
-      if (response.status === 401) {
-        // Not authenticated, redirect to login
-  
-        navigate("/login");
-        return;
-      } 
-      
-      return response.json();
-    }
-  });
+  const [update, setUpdate] = useState<boolean>(false);
+  const [count, setCount] = useState<boolean>(false);
+  const { data: user, isLoading } = useUser();
+
 
 
   const checkIn = async () => {
@@ -52,12 +36,9 @@ export default function Profile(): React.JSX.Element {
         credentials: "include",
     })
     const result = await response.json();
-    console.log(result)
-  }
-  // though process on solving the checking in mutilples times inna day is 
-  // last chcked in date in the data base 
-  // if the date is the same as current date do not allow check in 
-  // if the date is more than one day passed display a message like "get back on track and check in" 
+    setUpdate(result.updated);
+    setCount(true);
+  } 
 
   if (isLoading) return <Loading overlay message="Loading profile..." />;
 
@@ -79,7 +60,7 @@ export default function Profile(): React.JSX.Element {
               Settings
             </button>
             <button
-              onClick={() => navigate("/edit-goals")}
+              onClick={() => navigate("/editgoals")}
               className="px-3 py-2 bg-indigo-600 text-white rounded-md text-sm hover:bg-indigo-700"
             >
               Edit goals
@@ -91,7 +72,7 @@ export default function Profile(): React.JSX.Element {
           {/* Left column: main profile + stats (spans 2 cols on lg) */}
           <div className="lg:col-span-2 space-y-6">
             {/*will be profile data here im jsut making it into a component  */}
-            <ProfileHeader user={user.user} />
+            <ProfileHeader user={user.user} update={update} />
 
             {/* Proof vault & reflections */}
             
@@ -132,7 +113,7 @@ export default function Profile(): React.JSX.Element {
               <div className="text-sm text-gray-600">Quick actions</div>
               <div className="mt-3 flex flex-col gap-2">
                 <button onClick={checkIn} className="w-full text-sm px-3 py-2 bg-indigo-600 text-white rounded-md">Add goal</button>
-                <button onClick={checkIn} className="w-full text-sm px-3 py-2 border rounded-md">Check-in</button>
+                <button onClick={checkIn} disabled={count} className="w-full text-sm px-3 py-2 border rounded-md">Check-in</button>
               </div>
             </SmallCard>
           </aside>
