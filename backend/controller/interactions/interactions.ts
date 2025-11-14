@@ -1,9 +1,10 @@
 import dotenv from "dotenv";
 dotenv.config({ path: "./config/.env" });
-import getTodaysDate from "../../middleware/utils";
 import { Request, Response } from "express";
 import pool from "../../config/neon";
 import { DateTime } from "luxon";
+import {createGoal} from "../../model/createGoal";
+
 
 let interactions = {
     getProfile: async (req:Request, res:Response) => {
@@ -121,6 +122,12 @@ let interactions = {
         const userId = (req as any).user.sub;
         console.log(userId);
         res.json({message:"hey does this work"})
+    },
+    createGoal: async (req: Request, res: Response) => {
+        const userId = (req as any).user.sub;
+        const {title} = req.body
+        const user = await createGoal(userId, title);
+        res.status(201).send({status:"201", message:"goal was entered succesfully"})
     }
 }
 export default interactions

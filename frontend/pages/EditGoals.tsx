@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useState } from "react";
 import useGoals from "../customHook/goals"
 import Loading from "../components/Loading";
 
@@ -12,7 +13,8 @@ import Loading from "../components/Loading";
 
 export default function EditGoals(): React.JSX.Element {
     const { data: goals, isLoading } = useGoals();
-    console.log(goals,"coming from edit profile")
+    const [title, setTitle] = useState<string>("");
+    
 
   // Example placeholders (you'll replace these with real data)
   const exampleGoals = [
@@ -22,10 +24,19 @@ export default function EditGoals(): React.JSX.Element {
   ];
 
   // No-op handlers so the UI doesn't navigate — replace with your logic
-  const handleCreate = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleCreate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const response = await fetch('http://localhost:2050/creategoal', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: "include",
+      body: JSON.stringify({ title }),
+    });
+
+   // const data = await response.json();
     // TODO: implement create logic (FormData(e.currentTarget))
-    console.log("create submit - implement logic");
   };
 
   const handleUpdate = (e: React.FormEvent<HTMLFormElement>, id: string) => {
@@ -59,7 +70,7 @@ export default function EditGoals(): React.JSX.Element {
             <form onSubmit={handleCreate} className="mt-4 space-y-4">
               <div>
                 <label className="block text-xs font-medium text-gray-700">Title</label>
-                <input name="title" required placeholder="e.g. 5 minute stretch" className="mt-1 block w-full px-3 py-2 rounded-md border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                <input name="title" onChange={(e) => {setTitle(e.target.value)}} required placeholder="e.g. 5 minute stretch" className="mt-1 block w-full px-3 py-2 rounded-md border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
               </div>
 
               <div>
@@ -70,7 +81,7 @@ export default function EditGoals(): React.JSX.Element {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 <div>
                   <label className="block text-xs font-medium text-gray-700">Frequency</label>
-                  <select name="frequency" defaultValue="daily" className="mt-1 block w-full px-3 py-2 rounded-md border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                  <select name="frequency"  defaultValue="daily" className="mt-1 block w-full px-3 py-2 rounded-md border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
                     <option value="daily">Daily</option>
                     <option value="weekly">Weekly</option>
                     <option value="custom">Custom</option>
