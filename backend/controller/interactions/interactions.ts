@@ -120,13 +120,14 @@ let interactions = {
     },
     getGoals: async (req: Request, res: Response) => {
         const userId = (req as any).user.sub;
-        console.log(userId);
-        res.json({message:"hey does this work"})
+        const data = await pool.query('SELECT * FROM goals WHERE userid = $1', [userId]);
+        console.log(data.rows)
+        res.status(200).json(data.rows)
     },
     createGoal: async (req: Request, res: Response) => {
         const userId = (req as any).user.sub;
-        const {title} = req.body
-        const user = await createGoal(userId, title);
+        const {title, privacy} = req.body
+        const user = await createGoal(userId, title, 0, privacy);
         res.status(201).send({status:"201", message:"goal was entered succesfully"})
     }
 }

@@ -7,8 +7,8 @@ const createGoalTable = async () => {
                 id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
                 userid VARCHAR(255) NOT NULL,
                 goalName VARCHAR(255) NOT NULL,
-                streak INTEGER NOT NULL DEFAULT 0
-                
+                streak INTEGER NOT NULL DEFAULT 0,
+                privacy VARCHAR(255) NOT NULL
             );
         `);
     } catch (error) {

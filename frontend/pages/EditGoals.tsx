@@ -14,8 +14,10 @@ import Loading from "../components/Loading";
 export default function EditGoals(): React.JSX.Element {
     const { data: goals, isLoading } = useGoals();
     const [title, setTitle] = useState<string>("");
-    
+    const [privacy, setPrivacy] = useState<string>("public")
+    // const [number, setNumber] = useState<number>(goals.length)
 
+console.log(goals)
   // Example placeholders (you'll replace these with real data)
   const exampleGoals = [
     { id: "g1", title: "Morning stretch", description: "5–10 min gentle stretching", frequency: "daily", minutes: 10 },
@@ -32,7 +34,7 @@ export default function EditGoals(): React.JSX.Element {
         'Content-Type': 'application/json',
       },
       credentials: "include",
-      body: JSON.stringify({ title }),
+      body: JSON.stringify({ title, privacy }),
     });
 
    // const data = await response.json();
@@ -44,6 +46,13 @@ export default function EditGoals(): React.JSX.Element {
     // TODO: implement update logic (FormData(e.currentTarget), id)
     console.log("update submit for", id);
   };
+//   const showAll = () => {
+//     if(number === goals.length){
+//         setNumber(3)
+//     } else {
+//         setNumber(goals.length);
+//     }
+//  }
   if (isLoading) return <Loading overlay message="Loading goals..." />;
 
   return (
@@ -95,7 +104,7 @@ export default function EditGoals(): React.JSX.Element {
 
                 <div>
                   <label className="block text-xs font-medium text-gray-700">Privacy</label>
-                  <select name="privacy" defaultValue="private" className="mt-1 block w-full px-3 py-2 rounded-md border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                  <select name="privacy" onChange={(e) => {setPrivacy(e.target.value)}} defaultValue="private" className="mt-1 block w-full px-3 py-2 rounded-md border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
                     <option value="private">Private</option>
                     <option value="buddies">Buddies</option>
                     <option value="public">Public</option>
@@ -120,15 +129,15 @@ export default function EditGoals(): React.JSX.Element {
               </div>
 
               <ul className="mt-4 space-y-3">
-                {exampleGoals.map((g) => (
+                {goals.map((g) => (
                   <li key={g.id} className="border border-gray-100 rounded-md overflow-hidden">
                     <div className="p-3 flex items-start justify-between gap-3">
                       <div>
-                        <div className="text-sm font-semibold text-gray-900">{g.title}</div>
-                        <div className="text-xs text-gray-500 mt-1">{g.description}</div>
+                        <div className="text-sm font-semibold text-gray-900">{g.goalname}</div>
+                        {/* <div className="text-xs text-gray-500 mt-1">{g.description ? g.description : " "}</div> */}
                         <div className="mt-2 text-xs text-gray-500 flex gap-3">
-                          <span>Frequency: <strong className="text-gray-700 ml-1">{g.frequency}</strong></span>
-                          <span>Minutes: <strong className="text-gray-700 ml-1">{g.minutes}</strong></span>
+                          {/* <span>Frequency: <strong className="text-gray-700 ml-1">{g.frequency}</strong></span>
+                          <span>Minutes: <strong className="text-gray-700 ml-1">{g.minutes}</strong></span> */}
                         </div>
                       </div>
 
@@ -142,18 +151,18 @@ export default function EditGoals(): React.JSX.Element {
                             <form onSubmit={(e) => handleUpdate(e, g.id)} className="space-y-3">
                               <div>
                                 <label className="block text-xs font-medium text-gray-700">Title</label>
-                                <input name="title" defaultValue={g.title} className="mt-1 block w-full px-3 py-2 rounded-md border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                                <input name="title" defaultValue={g.goalname} className="mt-1 block w-full px-3 py-2 rounded-md border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
                               </div>
 
                               <div>
                                 <label className="block text-xs font-medium text-gray-700">Description</label>
-                                <input name="description" defaultValue={g.description} className="mt-1 block w-full px-3 py-2 rounded-md border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                                <input name="description"  className="mt-1 block w-full px-3 py-2 rounded-md border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
                               </div>
 
                               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                                 <div>
                                   <label className="block text-xs font-medium text-gray-700">Frequency</label>
-                                  <select name="frequency" defaultValue={g.frequency} className="mt-1 block w-full px-3 py-2 rounded-md border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                  <select name="frequency"  className="mt-1 block w-full px-3 py-2 rounded-md border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
                                     <option value="daily">Daily</option>
                                     <option value="weekly">Weekly</option>
                                     <option value="custom">Custom</option>
@@ -162,7 +171,7 @@ export default function EditGoals(): React.JSX.Element {
 
                                 <div>
                                   <label className="block text-xs font-medium text-gray-700">Minutes</label>
-                                  <input name="minutes" type="number" defaultValue={g.minutes} min={1} className="mt-1 block w-full px-3 py-2 rounded-md border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                                  <input name="minutes" type="number"  min={1} className="mt-1 block w-full px-3 py-2 rounded-md border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
                                 </div>
 
                                 <div>
@@ -187,17 +196,10 @@ export default function EditGoals(): React.JSX.Element {
                     </div>
                   </li>
                 ))}
+                {/* onClick={showAll} */}
+                {/* {number === 3 ? "Show All" : "Show 3"} */}
+                <button  className="px-4 py-2 bg-indigo-600 text-white rounded-md text-sm hover:bg-indigo-700"></button>
               </ul>
-            </div>
-
-            {/* Additional quick options */}
-            <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
-              <h3 className="text-sm font-semibold text-gray-900">Quick actions</h3>
-              <div className="mt-3 flex flex-wrap gap-2">
-                <button className="px-3 py-2 bg-indigo-50 text-indigo-700 rounded-md text-sm">Duplicate goal</button>
-                <button className="px-3 py-2 border rounded-md text-sm">Export goals</button>
-                <button className="px-3 py-2 border rounded-md text-sm">Import</button>
-              </div>
             </div>
           </div>
         </section>
