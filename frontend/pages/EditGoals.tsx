@@ -12,20 +12,10 @@ import Loading from "../components/Loading";
  */
 
 export default function EditGoals(): React.JSX.Element {
-    const { data: goals, isLoading } = useGoals();
+    const { data: goals, isLoading, refetch } = useGoals();
     const [title, setTitle] = useState<string>("");
-    const [privacy, setPrivacy] = useState<string>("public")
-    // const [number, setNumber] = useState<number>(goals.length)
+    const [privacy, setPrivacy] = useState<string>("private")
 
-console.log(goals)
-  // Example placeholders (you'll replace these with real data)
-  const exampleGoals = [
-    { id: "g1", title: "Morning stretch", description: "5–10 min gentle stretching", frequency: "daily", minutes: 10 },
-    { id: "g2", title: "Read 10 pages", description: "Read a few pages after breakfast", frequency: "daily", minutes: 15 },
-    { id: "g3", title: "Walk 15 min", description: "Short walk after lunch", frequency: "daily", minutes: 15 },
-  ];
-
-  // No-op handlers so the UI doesn't navigate — replace with your logic
   const handleCreate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const response = await fetch('http://localhost:2050/creategoal', {
@@ -37,22 +27,19 @@ console.log(goals)
       body: JSON.stringify({ title, privacy }),
     });
 
-   // const data = await response.json();
-    // TODO: implement create logic (FormData(e.currentTarget))
+   const data = await response.json();
+   if(data.status === "201"){
+    setTitle('');
+    alert(goals.message);
+    refetch();
+   }
   };
 
   const handleUpdate = (e: React.FormEvent<HTMLFormElement>, id: string) => {
     e.preventDefault();
-    // TODO: implement update logic (FormData(e.currentTarget), id)
     console.log("update submit for", id);
   };
-//   const showAll = () => {
-//     if(number === goals.length){
-//         setNumber(3)
-//     } else {
-//         setNumber(goals.length);
-//     }
-//  }
+
   if (isLoading) return <Loading overlay message="Loading goals..." />;
 
   return (
@@ -66,7 +53,6 @@ console.log(goals)
 
           <div className="flex gap-3">
             <Link to="/profile" className="text-sm px-3 py-2 border rounded-md bg-white hover:bg-gray-50">Back to profile</Link>
-            <Link to="/new-goal" className="text-sm px-3 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">Quick add</Link>
           </div>
         </header>
 
@@ -79,7 +65,7 @@ console.log(goals)
             <form onSubmit={handleCreate} className="mt-4 space-y-4">
               <div>
                 <label className="block text-xs font-medium text-gray-700">Title</label>
-                <input name="title" onChange={(e) => {setTitle(e.target.value)}} required placeholder="e.g. 5 minute stretch" className="mt-1 block w-full px-3 py-2 rounded-md border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                <input name="title" onChange={(e) => {setTitle(e.target.value)}} value={title} required placeholder="e.g. 5 minute stretch" className="mt-1 block w-full px-3 py-2 rounded-md border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
               </div>
 
               <div>
@@ -116,7 +102,6 @@ console.log(goals)
                 <button type="submit" className="px-4 py-2 bg-indigo-600 text-white rounded-md text-sm hover:bg-indigo-700">Create goal</button>
                 <button type="reset" className="px-4 py-2 border rounded-md text-sm">Clear</button>
               </div>
-              <p className="text-xs text-gray-400">Tip: Make it tiny — five minutes is a valid win.</p>
             </form>
           </div>
 
@@ -125,7 +110,7 @@ console.log(goals)
             <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold text-gray-900">Your goals</h2>
-                <span className="text-xs text-gray-500">{exampleGoals.length} goals</span>
+                <span className="text-xs text-gray-500">{goals.length} goals</span>
               </div>
 
               <ul className="mt-4 space-y-3">
@@ -143,7 +128,7 @@ console.log(goals)
 
                       <div className="flex-shrink-0 flex items-center gap-2">
                         <details className="group">
-                          <summary className="cursor-pointer inline-flex items-center gap-2 px-3 py-1 rounded-md text-xs bg-white border hover:bg-gray-50">
+                          <summary  className="cursor-pointer inline-flex items-center gap-2 px-3 py-1 rounded-md text-xs bg-white border hover:bg-gray-50">
                             Edit
                           </summary>
 
@@ -186,8 +171,7 @@ console.log(goals)
 
                               <div className="flex items-center gap-2">
                                 <button type="submit" className="px-3 py-2 bg-indigo-600 text-white rounded-md text-sm hover:bg-indigo-700">Save</button>
-                                <button type="button" onClick={() => {/* optional cancel: details will close manually */}} className="px-3 py-2 border rounded-md text-sm">Cancel</button>
-                                <button type="button" className="ml-auto text-sm text-red-600 hover:underline">Delete</button>
+                                <button type="button" onClick={() => {console.log("lmao")}} className="px-3 py-2 border rounded-md text-sm">Delete</button>
                               </div>
                             </form>
                           </div>
@@ -198,7 +182,7 @@ console.log(goals)
                 ))}
                 {/* onClick={showAll} */}
                 {/* {number === 3 ? "Show All" : "Show 3"} */}
-                <button  className="px-4 py-2 bg-indigo-600 text-white rounded-md text-sm hover:bg-indigo-700"></button>
+                <button  className="px-4 py-2 bg-indigo-600 text-white rounded-md text-sm hover:bg-indigo-700">Show All</button>
               </ul>
             </div>
           </div>
