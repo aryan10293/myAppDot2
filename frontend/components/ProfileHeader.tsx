@@ -3,14 +3,16 @@ import StatCard from './StatCard';
 import { useNavigate } from "react-router-dom";
 import ProgressRing from './ProgressRing';
 import { useQuery } from "@tanstack/react-query";
+import useGoals from '../customHook/goals';
 function ProfileHeader(props:any): React.JSX.Element {
     const navigate = useNavigate();
-    const topGoals =  [
-    { id: "g1", title: "Morning stretch", streak: 10 },
-    { id: "g2", title: "Read 10 pages", streak: 3 },
-    { id: "g3", title: "Walk 15 min", streak: 7 },
-  ];
-  const { data:idk, isLoading } = useQuery({
+    const { data: goals, isLoading, refetch } = useGoals();
+  //   const topGoals =  [
+  //   { id: "g1", title: "Morning stretch", streak: 10 },
+  //   { id: "g2", title: "Read 10 pages", streak: 3 },
+  //   { id: "g3", title: "Walk 15 min", streak: 7 },
+  // ];
+  const { data:idk } = useQuery({
     queryKey: ['idk'],
     queryFn: async () => {
       const response = await fetch("http://localhost:2050/checkforcheckin", {
@@ -29,9 +31,10 @@ function ProfileHeader(props:any): React.JSX.Element {
     if (isLoading) {
       return <span>Loading...</span>
     }
-    if(idk.reset){
-      alert(idk.message)
-    }
+
+    // if(idk.reset){
+    //   alert(idk.message)
+    // }
 
   return (
     <div className="bg-white rounded-2xl border border-gray-100 p-6 flex flex-col sm:flex-row gap-6 items-center">
@@ -75,16 +78,16 @@ function ProfileHeader(props:any): React.JSX.Element {
                   <div className="flex-1 min-w-0">
                     <div className="text-sm text-gray-700 font-medium">Top goals</div>
                     <ul className="mt-2 space-y-2">
-                      {topGoals.slice(0, 3).map((g) => (
+                      {goals.slice(0, 3).map((g) => (
                         <li key={g.id} className="flex items-center justify-between bg-white/50 rounded-md p-3 border border-gray-100">
                           <div>
-                            <div className="text-sm font-semibold text-gray-900">{g.title}</div>
+                            <div className="text-sm font-semibold text-gray-900">{g.goalname}</div>
                             <div className="text-xs text-gray-500">Streak: {g.streak ?? 0} days</div>
                           </div>
                           <div>
                             <button
                               className="text-xs px-2 py-1 bg-gray-100 rounded-md text-gray-700"
-                              onClick={() => navigate(`/goals/${g.id}`)}
+                              onClick={() => navigate(`/goals/${g.goalname}`)}
                             >
                               View
                             </button>

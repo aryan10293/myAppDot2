@@ -22,17 +22,35 @@ export default function EditGoals(): React.JSX.Element {
     });
 
    const data = await response.json();
-   if(data.status === "201"){
-    setTitle('');
-    alert(data.message);
-    refetch();
-   }
-  };
+        if(data.status === "201"){
+            setTitle('');
+            alert(data.message);
+            refetch();
+        }
+    };
 
   const handleUpdate = (e: React.FormEvent<HTMLFormElement>, id: string) => {
     e.preventDefault();
-    console.log("update submit for", id);
+    
+    
   };
+  const handleDelete = async (goalName:string) => {
+    console.log(goalName)
+    const response = await fetch(`http://localhost:2050/deletegoal/${goalName}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: "include"
+    });
+
+   const data = await response.json();
+   console.log(data)
+    if(data.status === "200"){
+        alert(data.message);
+        refetch();
+    }
+  }
 
   if (isLoading) return <Loading overlay message="Loading goals..." />;
 
@@ -166,7 +184,7 @@ export default function EditGoals(): React.JSX.Element {
 
                               <div className="flex items-center gap-2">
                                 <button type="submit" className="px-3 py-2 bg-indigo-600 text-white rounded-md text-sm hover:bg-indigo-700">Save</button>
-                                <button type="button" onClick={() => {console.log("lmao")}} className="px-3 py-2 border rounded-md text-sm">Delete</button>
+                                <button type="button" onClick={()=> {handleDelete(g.goalname)}} className="px-3 py-2 border rounded-md text-sm">Delete</button>
                               </div>
                             </form>
                           </div>

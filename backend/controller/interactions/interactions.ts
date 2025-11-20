@@ -121,7 +121,6 @@ let interactions = {
     getGoals: async (req: Request, res: Response) => {
         const userId = (req as any).user.sub;
         const data = await pool.query('SELECT * FROM goals WHERE userid = $1', [userId]);
-        console.log(data.rows)
         res.status(200).json(data.rows)
     },
     createGoal: async (req: Request, res: Response) => {
@@ -129,6 +128,21 @@ let interactions = {
         const {title, privacy, minutes} = req.body
         const user = await createGoal(userId, title, minutes, privacy );
         res.status(201).send({status:"201", message:"goal was entered succesfully"})
+    },
+    deleteGoal: async (req: Request, res: Response) => {
+        try {
+            const userId = (req as any).user.sub;
+            const { goalname } = req.params;
+            const data = await pool.query('SELECT * FROM goals WHERE userid = $1 and goalname = $2', [userId, goalname]);
+            const goalData = await pool.query('DELETE FROM goals WHERE id = $1', [data.rows[0].id]);
+            res.status(200).send({status:"200", message:"goal was deleted"});
+            
+            
+        } catch (error) {
+            console.log(error)
+            res.status(500).send({error})
+            
+        }
     }
 }
 export default interactions
