@@ -126,8 +126,8 @@ let interactions = {
     },
     createGoal: async (req: Request, res: Response) => {
         const userId = (req as any).user.sub;
-        const {title, privacy} = req.body
-        const user = await createGoal(userId, title, 0, privacy);
+        const {title, privacy, minutes} = req.body
+        const user = await createGoal(userId, title, minutes, privacy );
         res.status(201).send({status:"201", message:"goal was entered succesfully"})
     }
 }

@@ -8,6 +8,7 @@ const createGoalTable = async () => {
                 userid VARCHAR(255) NOT NULL,
                 goalName VARCHAR(255) NOT NULL,
                 streak INTEGER NOT NULL DEFAULT 0,
+                minutes INTEGER NOT NULL DEFAULT 0,
                 privacy VARCHAR(255) NOT NULL
             );
         `);

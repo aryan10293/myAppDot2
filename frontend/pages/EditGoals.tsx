@@ -4,16 +4,10 @@ import { useState } from "react";
 import useGoals from "../customHook/goals"
 import Loading from "../components/Loading";
 
-/**
- * EditGoals.tsx
- * - UI-only page for listing goals, editing existing ones, and creating new goals.
- * - Uses <details> to open edit forms without JS; each form currently prevents default submit.
- * - Hook your API or state logic into the onSubmit handlers or replace with your handlers.
- */
-
 export default function EditGoals(): React.JSX.Element {
     const { data: goals, isLoading, refetch } = useGoals();
     const [title, setTitle] = useState<string>("");
+    const [minutes, setMinutes] = useState<number>(5);
     const [privacy, setPrivacy] = useState<string>("private")
 
   const handleCreate = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -24,13 +18,13 @@ export default function EditGoals(): React.JSX.Element {
         'Content-Type': 'application/json',
       },
       credentials: "include",
-      body: JSON.stringify({ title, privacy }),
+      body: JSON.stringify({ title, privacy, minutes }),
     });
 
    const data = await response.json();
    if(data.status === "201"){
     setTitle('');
-    alert(goals.message);
+    alert(data.message);
     refetch();
    }
   };
@@ -56,9 +50,10 @@ export default function EditGoals(): React.JSX.Element {
           </div>
         </header>
 
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Responsive two-column: stacks on xs, side-by-side from sm+ */}
+        <section className="grid grid-cols-1 sm:grid-cols-2 gap-6 items-start">
           {/* Left: Create new goal */}
-          <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+          <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm h-full min-h-[220px]">
             <h2 className="text-lg font-semibold text-gray-900">Create a new goal</h2>
             <p className="text-sm text-gray-500 mt-1">Start with a tiny, achievable goal.</p>
 
@@ -85,7 +80,7 @@ export default function EditGoals(): React.JSX.Element {
 
                 <div>
                   <label className="block text-xs font-medium text-gray-700">Minutes</label>
-                  <input name="minutes" type="number" min={1} defaultValue={5} className="mt-1 block w-full px-3 py-2 rounded-md border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                  <input name="minutes" type="number" min={0}onChange={(e) => {setMinutes(parseInt(e.target.value))}}  value={minutes} defaultValue={5} className="mt-1 block w-full px-3 py-2 rounded-md border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
                 </div>
 
                 <div>
@@ -106,8 +101,8 @@ export default function EditGoals(): React.JSX.Element {
           </div>
 
           {/* Right: Existing goals list with edit panels */}
-          <div className="space-y-4">
-            <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
+          <div className="space-y-4 h-full flex flex-col">
+            <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm flex-1 overflow-auto min-h-[220px]">
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold text-gray-900">Your goals</h2>
                 <span className="text-xs text-gray-500">{goals.length} goals</span>
@@ -117,8 +112,8 @@ export default function EditGoals(): React.JSX.Element {
                 {goals.map((g) => (
                   <li key={g.id} className="border border-gray-100 rounded-md overflow-hidden">
                     <div className="p-3 flex items-start justify-between gap-3">
-                      <div>
-                        <div className="text-sm font-semibold text-gray-900">{g.goalname}</div>
+                      <div className="min-w-0">
+                        <div className="text-sm font-semibold text-gray-900 truncate">{g.goalname}</div>
                         {/* <div className="text-xs text-gray-500 mt-1">{g.description ? g.description : " "}</div> */}
                         <div className="mt-2 text-xs text-gray-500 flex gap-3">
                           {/* <span>Frequency: <strong className="text-gray-700 ml-1">{g.frequency}</strong></span>
@@ -176,13 +171,18 @@ export default function EditGoals(): React.JSX.Element {
                             </form>
                           </div>
                         </details>
+                        <Link   to={`/goal/${g.goalname}`} className="cursor-pointer inline-flex items-center gap-2 px-3 py-1 rounded-md text-xs bg-white border hover:bg-gray-50">
+                            View
+                        </Link>
                       </div>
                     </div>
                   </li>
                 ))}
                 {/* onClick={showAll} */}
                 {/* {number === 3 ? "Show All" : "Show 3"} */}
-                <button  className="px-4 py-2 bg-indigo-600 text-white rounded-md text-sm hover:bg-indigo-700">Show All</button>
+                <div className="mt-3">
+                  <button className="px-4 py-2 bg-indigo-600 text-white rounded-md text-sm hover:bg-indigo-700">Show All</button>
+                </div>
               </ul>
             </div>
           </div>
