@@ -5,7 +5,7 @@ function useGoals()  {
     return useQuery({
         queryKey: ["goals"],
         queryFn: async () => {
-        const response = await fetch("http://localhost:2050/getgoals", {
+        const response = await fetch("http://localhost:2050/goal", {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",

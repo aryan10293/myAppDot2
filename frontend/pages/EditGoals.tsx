@@ -8,13 +8,12 @@ import EditGoalComp from "../components/EditGoalComp";
 export default function EditGoals(): React.JSX.Element {
     const { data: goals, isLoading, refetch } = useGoals();
     const [title, setTitle] = useState<string>("");
-    const [editGoal, setEditGoal] = useState<string>("")
     const [minutes, setMinutes] = useState<number>(5);
     const [privacy, setPrivacy] = useState<string>("private")
 
   const handleCreate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const response = await fetch('http://localhost:2050/creategoal', {
+    const response = await fetch('http://localhost:2050/goal', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

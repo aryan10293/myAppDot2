@@ -1,14 +1,15 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import EditGoals from '../pages/EditGoals';
 
 interface Props {
     goal:any;
     refetch: () => void;
 }
-function EditGoalComp({goal, refetch} : props ) {
+function EditGoalComp({goal, refetch} : Props ) {
+    const [editGoal, setEditGoal] = useState<string>("lamoo")
     const handleDelete = async (goalName:string) => {
-    console.log(goalName)
-    const response = await fetch(`http://localhost:2050/deletegoal/${goalName}`, {
+    const response = await fetch(`http://localhost:2050/goal/${goalName}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
@@ -17,13 +18,15 @@ function EditGoalComp({goal, refetch} : props ) {
     });
 
    const data = await response.json();
-   console.log(data)
     if(data.status === "200"){
         alert(data.message);
         refetch();
     }
   }
-  console.log(goal)
+  const handleEdit = (e:any) => {
+    e.preventDefault();
+    console.log(EditGoals)
+  }
   return (
     <li key={goal.id} className="border border-gray-100 rounded-md overflow-hidden">
         <div className="p-3 flex items-start justify-between gap-3">
@@ -77,7 +80,7 @@ function EditGoalComp({goal, refetch} : props ) {
                     </div>
 
                     <div className="flex items-center gap-2">
-                    <button type="submit" className="px-3 py-2 bg-indigo-600 text-white rounded-md text-sm hover:bg-indigo-700">Save</button>
+                    <button type="submit" onClick={handleEdit} className="px-3 py-2 bg-indigo-600 text-white rounded-md text-sm hover:bg-indigo-700">Save</button>
                     <button type="button" onClick={()=> {handleDelete(goal.goalname)}} className="px-3 py-2 border rounded-md text-sm">Delete</button>
                     </div>
                 </form>
