@@ -7,7 +7,8 @@ interface Props {
     refetch: () => void;
 }
 function EditGoalComp({goal, refetch} : Props ) {
-    const [editGoal, setEditGoal] = useState<string>("lamoo")
+    const [editGoal, setEditGoal] = React.useState<string>(goal.goalname);
+    const [open, setOpen] = React.useState(false);
     const handleDelete = async (goalName:string) => {
     const response = await fetch(`http://localhost:2050/goal/${goalName}`, {
       method: 'DELETE',
@@ -23,9 +24,23 @@ function EditGoalComp({goal, refetch} : Props ) {
         refetch();
     }
   }
-  const handleEdit = (e:any) => {
+  const handleEdit = async (e:any, ) => {
     e.preventDefault();
-    console.log(EditGoals)
+    const response = await fetch(`http://localhost:2050/goal/${goal.id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: "include",
+      body: JSON.stringify({ title: editGoal, userid: goal.userid }),
+    });
+
+   const data = await response.json();
+    if(data.status === "200"){
+        alert(data.message);
+        setOpen(!open);
+        refetch();
+    }
   }
   return (
     <li key={goal.id} className="border border-gray-100 rounded-md overflow-hidden">
@@ -39,16 +54,21 @@ function EditGoalComp({goal, refetch} : Props ) {
             </div>
             </div>
             <div className="flex-shrink-0 flex items-center gap-2">
-            <details className="group">
-                <summary className="cursor-pointer inline-flex items-center gap-2 px-3 py-1 rounded-md text-xs bg-white border hover:bg-gray-50">
-                Edit
+            <details className="group" open={open}>
+                <summary onClick={() => {
+                    console.log(open, '1')
+                    setOpen(!open) 
+                    console.log(open, '2');
+                }} className="cursor-pointer inline-flex items-center gap-2 px-3 py-1 rounded-md text-xs bg-white border hover:bg-gray-50">
+                Edit 
                 </summary>
+                {/* i may need to toggle this or change the whole approach to make this work */}
 
-                <div className="mt-3 p-3 bg-gray-50 border border-gray-100 rounded-md">
+                <div className={`mt-3 p-3 bg-gray-50 border border-gray-100 rounded-md`}>
                 <form  className="space-y-3">
                     <div>
                         <label className="block text-xs font-medium text-gray-700">Title</label>
-                        <input name="title" value={goal.goalname} className="mt-1 block w-full px-3 py-2 rounded-md border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                        <input name="title" value={editGoal} onChange={(e)=> {setEditGoal(e.target.value)}} className="mt-1 block w-full px-3 py-2 rounded-md border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
                     </div>
 
                     <div>

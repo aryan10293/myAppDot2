@@ -143,6 +143,27 @@ let interactions = {
             res.status(500).send({error})
             
         }
+    }, editGoal: async (req: Request, res: Response) => {
+        try {
+            const userId = (req as any).user.sub;
+            console.log(userId)
+            const { id } = req.params;
+            const { title, userid  } = req.body;
+
+            const data = await pool.query(
+                'UPDATE goals SET goalname = $1 WHERE id = $2 AND userid = $3 RETURNING *',
+                [title, id, userId]
+            );
+
+            if (data.rowCount === 0) {
+                return res.status(404).send({ status: "404", message: "Goal not found or you do not have permission to edit this goal." });
+            }
+
+            res.status(200).send({ status: "200", message: "Goal was updated successfully", goal: data.rows[0] });
+        } catch (error) {
+            console.log(error);
+            res.status(500).send({ error });
+        }
     }
 }
 export default interactions

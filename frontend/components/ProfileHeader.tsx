@@ -7,11 +7,7 @@ import useGoals from '../customHook/goals';
 function ProfileHeader(props:any): React.JSX.Element {
     const navigate = useNavigate();
     const { data: goals, isLoading, refetch } = useGoals();
-  //   const topGoals =  [
-  //   { id: "g1", title: "Morning stretch", streak: 10 },
-  //   { id: "g2", title: "Read 10 pages", streak: 3 },
-  //   { id: "g3", title: "Walk 15 min", streak: 7 },
-  // ];
+
   const { data:idk } = useQuery({
     queryKey: ['idk'],
     queryFn: async () => {
@@ -32,9 +28,6 @@ function ProfileHeader(props:any): React.JSX.Element {
       return <span>Loading...</span>
     }
 
-    // if(idk.reset){
-    //   alert(idk.message)
-    // }
 
   return (
     <div className="bg-white rounded-2xl border border-gray-100 p-6 flex flex-col sm:flex-row gap-6 items-center">
@@ -67,7 +60,7 @@ function ProfileHeader(props:any): React.JSX.Element {
 
                 <div className="mt-4 flex items-center gap-6">
                   <div className="flex items-center gap-4">
-                    <ProgressRing percent={Math.min(Math.max( .10), 1)} />
+                    <ProgressRing percent={Math.min(Math.max( .40), 1)} />
                     <div className="text-sm text-gray-600">
                       <div className="font-medium text-gray-900">Weekly progress</div>
                       <div className="text-xs mt-1">Small wins stacked this week</div>

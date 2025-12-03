@@ -14,6 +14,7 @@ router.post('/goal', requireAuth, interactions.createGoal);
 
 router.patch("/checkin", requireAuth, interactions.checkIn);
 router.patch("/checkforcheckin", requireAuth, interactions.checkForCheckIn);
+router.patch("/goal/:id", requireAuth, interactions.editGoal);
 
 router.delete("/goal/:goalname", requireAuth, interactions.deleteGoal);
 
