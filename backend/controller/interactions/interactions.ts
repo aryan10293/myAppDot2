@@ -125,8 +125,8 @@ let interactions = {
     },
     createGoal: async (req: Request, res: Response) => {
         const userId = (req as any).user.sub;
-        const {title, privacy, minutes} = req.body
-        const user = await createGoal(userId, title, minutes, privacy );
+        const {title, privacy, minutes, description, frequency} = req.body
+        const user = await createGoal(userId, title, minutes, privacy, description, frequency );
         res.status(201).send({status:"201", message:"goal was entered succesfully"})
     },
     deleteGoal: async (req: Request, res: Response) => {
@@ -146,13 +146,12 @@ let interactions = {
     }, editGoal: async (req: Request, res: Response) => {
         try {
             const userId = (req as any).user.sub;
-            console.log(userId)
             const { id } = req.params;
-            const { title, userid  } = req.body;
+            const { title, description, frequency, minutes, privacy } = req.body;
 
             const data = await pool.query(
-                'UPDATE goals SET goalname = $1 WHERE id = $2 AND userid = $3 RETURNING *',
-                [title, id, userId]
+                'UPDATE goals SET goalname = $1, description = $2, frequency = $3, minutes = $4, privacy = $5 WHERE id = $6 AND userid = $7 RETURNING *',
+                [title, description, frequency, minutes, privacy, id, userId]
             );
 
             if (data.rowCount === 0) {

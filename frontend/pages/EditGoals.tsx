@@ -9,7 +9,9 @@ export default function EditGoals(): React.JSX.Element {
     const { data: goals, isLoading, refetch } = useGoals();
     const [title, setTitle] = useState<string>("");
     const [minutes, setMinutes] = useState<number>(5);
-    const [privacy, setPrivacy] = useState<string>("private")
+    const [description, setDescription] = useState<string>("");
+    const [privacy, setPrivacy] = useState<string>("private");
+    const [frequency, setFrequency] = useState<string>("daily");
 
   const handleCreate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -19,22 +21,21 @@ export default function EditGoals(): React.JSX.Element {
         'Content-Type': 'application/json',
       },
       credentials: "include",
-      body: JSON.stringify({ title, privacy, minutes }),
+      body: JSON.stringify({ title, privacy, minutes, description, frequency }),
     });
 
    const data = await response.json();
         if(data.status === "201"){
             setTitle('');
+            setMinutes(5);
+            setDescription('');
+            setPrivacy('private');
+            setFrequency('daily');
             alert(data.message);
             refetch();
         }
     };
 
-  const handleUpdate = (e: React.FormEvent<HTMLFormElement>, goalname: string) => {
-    e.preventDefault();
-    console.log(editGoal);
-    
-  };
 
   if (isLoading) return <Loading overlay message="Loading goals..." />;
 
@@ -66,17 +67,16 @@ export default function EditGoals(): React.JSX.Element {
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-700">Short description</label>
-                <input name="description" placeholder="Optional: quick note about this goal" className="mt-1 block w-full px-3 py-2 rounded-md border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                <label className="block text-xs font-medium text-gray-700">Short description (Optional)</label>
+                <input name="description" onChange={(e) => {setDescription(e.target.value)}} value={description} placeholder=" I want to work out 4× a week " className="mt-1 block w-full px-3 py-2 rounded-md border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 <div>
                   <label className="block text-xs font-medium text-gray-700">Frequency</label>
-                  <select name="frequency"  defaultValue="daily" className="mt-1 block w-full px-3 py-2 rounded-md border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                  <select name="frequency"  defaultValue={frequency} onChange={(e) => {setFrequency(e.target.value)}} className="mt-1 block w-full px-3 py-2 rounded-md border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
                     <option value="daily">Daily</option>
                     <option value="weekly">Weekly</option>
-                    <option value="custom">Custom</option>
                   </select>
                 </div>
 
@@ -109,17 +109,24 @@ export default function EditGoals(): React.JSX.Element {
                 <h2 className="text-lg font-semibold text-gray-900">Your goals</h2>
                 <span className="text-xs text-gray-500">{goals.length} goals</span>
               </div>
-
-              <ul className="mt-4 space-y-3">
-                {goals.map((g) => (
-                    <EditGoalComp goal={g} refetch={refetch} />
-                ))}
-                {/* onClick={showAll} */}
-                {/* {number === 3 ? "Show All" : "Show 3"} */}
-                <div className="mt-3">
-                  <button className="px-4 py-2 bg-indigo-600 text-white rounded-md text-sm hover:bg-indigo-700">Show All</button>
+              {goals.length === 0 ? (
+            <div className="bg-white rounded-2xl  border-gray-100 p-6  h-full flex items-center justify-center">
+              <p className="text-sm text-gray-500">No goals found. Create one to get started!</p>
+            </div>
+              ) : (
+                <div className="space-y-4">
+                  <ul className="mt-4 space-y-3">
+                    {goals.map((g) => (
+                        <EditGoalComp goal={g} refetch={refetch} />
+                    ))}
+                    {/* onClick={showAll} */}
+                    {/* {number === 3 ? "Show All" : "Show 3"} */}
+                    <div className="mt-3">
+                      <button className="px-4 py-2 bg-indigo-600 text-white rounded-md text-sm hover:bg-indigo-700">Show All</button>
+                    </div>
+                  </ul>
                 </div>
-              </ul>
+              )}
             </div>
           </div>
         </section>
