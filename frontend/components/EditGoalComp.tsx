@@ -8,7 +8,7 @@ interface Props {
 }
 function EditGoalComp({goal, refetch} : Props ) {
     const [editGoal, setEditGoal] = React.useState<string>(goal.goalname);
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = React.useState<boolean>(false);
     const handleDelete = async (goalName:string) => {
     const response = await fetch(`http://localhost:2050/goal/${goalName}`, {
       method: 'DELETE',
@@ -55,11 +55,7 @@ function EditGoalComp({goal, refetch} : Props ) {
             </div>
             <div className="flex-shrink-0 flex items-center gap-2">
             <details className="group" open={open}>
-                <summary onClick={() => {
-                    console.log(open, '1')
-                    setOpen(!open) 
-                    console.log(open, '2');
-                }} className="cursor-pointer inline-flex items-center gap-2 px-3 py-1 rounded-md text-xs bg-white border hover:bg-gray-50">
+                <summary onClick={(e) => {e.preventDefault(); setOpen(!open) }} className="cursor-pointer inline-flex items-center gap-2 px-3 py-1 rounded-md text-xs bg-white border hover:bg-gray-50">
                 Edit 
                 </summary>
                 {/* i may need to toggle this or change the whole approach to make this work */}
