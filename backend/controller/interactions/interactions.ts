@@ -163,7 +163,80 @@ let interactions = {
             console.log(error);
             res.status(500).send({ error });
         }
+    },
+    getGoalByName: async (req: Request, res: Response) => {
+        try {
+            const userId = (req as any).user.sub;
+            const { goalname } = req.params;
+            const data = await pool.query('SELECT * FROM goals WHERE userid = $1 and goalname = $2', [userId, goalname]);
+            if(data.rowCount === 0){
+                return res.status(404).send({status:"404", message:"Goal not found"});
+            }
+            res.status(200).json({goal: data.rows[0]})
+        } catch (error) {
+            console.log(error)
+            res.status(500).send({error})
+        }
+    },
+    goalCheckIn: async (req: Request, res: Response) => {
+        try {
+            const userId = (req as any).user.sub;
+            const { goalname } = req.params;
+
+            const goalData = await pool.query('SELECT * FROM goals WHERE userid = $1 and goalname = $2', [userId, goalname]);
+            if(goalData.rowCount === 0){
+                return res.status(404).send({status:"404", message:"Goal not found"});
+            }
+
+            const goal = goalData.rows[0];
+
+            const lastCheckinRaw = goal.lastcheckindate + ""; 
+
+            let lastCheckin: any = lastCheckinRaw ? DateTime.fromJSDate(new Date(lastCheckinRaw)) : null; 
+            let today: any = DateTime.fromJSDate(new Date())
+
+            if(lastCheckin){
+                lastCheckin = lastCheckin.toISO().slice(0,10);
+                lastCheckin =  DateTime.fromISO(lastCheckin);
+            }
+
+            today = today.toISO().slice(0,10);
+            today = DateTime.fromISO(today);
+
+            let diff = lastCheckin ? today.diff(lastCheckin, 'days').days : null;
+
+            if(diff !== null && diff <= 0){
+                return res.status(200).json({
+                    updated: false,
+                    message: "Already checked in for this goal today.",
+                });
+            } else {
+                const updateQuery = `
+                    UPDATE goals
+                    SET streak = $1,
+                        lastcheckindate = NOW()
+                    WHERE id = $2
+                    RETURNING *;
+                `;
+
+                const newStreak = (diff !== null && diff === 1) ? goal.streak + 1 : 1;
+                const updateValues = [newStreak, goal.id];
+                const result = await pool.query(updateQuery, updateValues);
+
+                
+                return res.status(200).json({
+                updated: true,
+                message: "Goal check-in successful.",
+                ...result.rows[0],
+                });
+            }
+
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ message: error });
+        }
     }
+
 }
 export default interactions
 

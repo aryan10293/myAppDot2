@@ -6,6 +6,7 @@ const router = express.Router();
 
 router.get("/profile", requireAuth, main.getProfile)
 router.get("/goal", requireAuth, interactions.getGoals);
+router.get("/goal/:goalname", requireAuth, interactions.getGoalByName);
 
 router.post("/register", main.register);
 router.post("/login", main.login);
@@ -15,6 +16,7 @@ router.post('/goal', requireAuth, interactions.createGoal);
 router.patch("/checkin", requireAuth, interactions.checkIn);
 router.patch("/checkforcheckin", requireAuth, interactions.checkForCheckIn);
 router.patch("/goal/:id", requireAuth, interactions.editGoal);
+router.patch("/checkin/:goalname", requireAuth, interactions.goalCheckIn);
 
 router.delete("/goal/:goalname", requireAuth, interactions.deleteGoal);
 

@@ -7,11 +7,11 @@ export async function createGoal(userId:string, goalName:string, minutes:number,
 
     // insert user into past needs to look exactly how it does in the createTables function
   const query = `
-    INSERT INTO goals (id, userid, goalName, streak, privacy, minutes, description, frequency)
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+    INSERT INTO goals (id, userid, goalName, privacy, minutes, description, frequency)
+    VALUES ($1, $2, $3, $4, $5, $6, $7)
     RETURNING *;
   `;
-  const values = [id, userId, goalName, 0, privacy, minutes, description, frequency];
+  const values = [id, userId, goalName, privacy, minutes, description, frequency];
   const result = await pool.query(query, values);
   return result.rows[0];
 }

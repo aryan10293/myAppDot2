@@ -9,9 +9,12 @@ const createGoalTable = async () => {
                 goalName VARCHAR(255) NOT NULL,
                 description TEXT,
                 frequency VARCHAR(255),
-                streak INTEGER NOT NULL DEFAULT 0,
-                minutes INTEGER NOT NULL DEFAULT 0,
-                privacy VARCHAR(255) NOT NULL
+                streak INTEGER NOT NULL DEFAULT 1,
+                minutes INTEGER NOT NULL DEFAULT 1,
+                longeststreak INTEGER NOT NULL DEFAULT 1,
+                privacy VARCHAR(255) NOT NULL,
+                lastcheckindate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                createdDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         `);
     } catch (error) {
