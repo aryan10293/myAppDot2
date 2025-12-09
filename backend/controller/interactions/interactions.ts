@@ -181,6 +181,7 @@ let interactions = {
     goalCheckIn: async (req: Request, res: Response) => {
         try {
             const userId = (req as any).user.sub;
+            const totalcheckins = userId.totalcheckins + 1;
             const { goalname } = req.params;
 
             const goalData = await pool.query('SELECT * FROM goals WHERE userid = $1 and goalname = $2', [userId, goalname]);
@@ -214,13 +215,13 @@ let interactions = {
                 const updateQuery = `
                     UPDATE goals
                     SET streak = $1,
+                    SET totalcheckins = $3,
                         lastcheckindate = NOW()
                     WHERE id = $2
                     RETURNING *;
                 `;
-
                 const newStreak = (diff !== null && diff === 1) ? goal.streak + 1 : 1;
-                const updateValues = [newStreak, goal.id];
+                const updateValues = [newStreak, totalcheckins,  goal.id];
                 const result = await pool.query(updateQuery, updateValues);
 
                 

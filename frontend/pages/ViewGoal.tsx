@@ -46,11 +46,11 @@ console.log(goal);
   const g = goal?.goal || goal || {};
   const currentStreak = g.streak;
   console.log(currentStreak)
-  const longestStreak = g?.longestStreak ?? 0;
-  const totalCompletions = g?.totalCompletions ?? 0;
+  const longestStreak = g?.longeststreak ?? 0;
+  const totalCompletions = g?.totalcheckins ?? 0;
   const weekProgress = g?.weekProgress ?? [0, 0, 0, 0, 0, 0, 0];
   const monthProgress = g?.monthProgress ?? Array(30).fill(0);
-  const lastCheckin = g?.lastCheckinDate ? new Date(g.lastCheckinDate).toLocaleDateString() : 'Never';
+  const lastCheckin = g?.lastcheckindate ? new Date(g.lastcheckindate).toLocaleDateString() : 'Never';
   const createdDate = g?.createdAt ? new Date(g.createdAt).toLocaleDateString() : 'Unknown';
 
   const progressData = timeframe === 'week' ? weekProgress : monthProgress;

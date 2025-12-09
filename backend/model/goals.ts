@@ -12,6 +12,7 @@ const createGoalTable = async () => {
                 streak INTEGER NOT NULL DEFAULT 1,
                 minutes INTEGER NOT NULL DEFAULT 1,
                 longeststreak INTEGER NOT NULL DEFAULT 1,
+                totalcheckins INTEGER NOT NULL DEFAULT 1,
                 privacy VARCHAR(255) NOT NULL,
                 lastcheckindate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 createdDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP
