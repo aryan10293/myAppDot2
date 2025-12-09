@@ -243,8 +243,29 @@ let interactions = {
             console.error(error);
             return res.status(500).json({ message: error });
         }
-    }
+    },
+    history: async (req: Request, res: Response) => {
+        try {
+            const userId = (req as any).user.sub;
+            const { goalname } = req.params;
 
+            const goalData = await pool.query('SELECT * FROM goals WHERE userid = $1 and goalname = $2', [userId, goalname]);
+            console.log(goalData);
+            if(goalData.rowCount === 0){
+                return res.status(404).send({status:"404", message:"Goal not found"});
+            }
+
+            const goal = goalData.rows[0];
+            console.log(goal);
+            return res.status(200).json({
+                status: "200",
+                history: "Not implemented yet"
+            });
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ message: error });
+        }
+    }
 }
 export default interactions
 

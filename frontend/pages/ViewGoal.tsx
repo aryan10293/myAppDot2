@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Loading from '../components/Loading';
 import StatCardTwo  from '../components/StatCardTWo';
 import useOneGoal from '../customHook/getOneGoal';
+import History from '../components/History';
+import Reflection from '../components/Reflection';
 
 // interface GoalData {
 //   id: string;
@@ -151,42 +153,12 @@ console.log(goal);
           </div>
 
           {/* Quick insights sidebar */}
-          <div className="space-y-4">
-            <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-2xl border border-indigo-100 p-6">
-              <div className="text-sm font-semibold text-indigo-900">Consistency Rate</div>
-              <div className="mt-2 text-3xl font-extrabold text-indigo-600">
-                {totalCompletions > 0 ? Math.round((totalCompletions / (currentStreak + 5)) * 100) : 0}%
-              </div>
-              <p className="mt-2 text-xs text-indigo-700">Keep the momentum going!</p>
-            </div>
-
-
-            <button
-              onClick={handleCheckin}
-              className="w-full px-4 py-3 bg-emerald-600 text-white rounded-lg font-medium hover:bg-emerald-700 text-sm"
-            >
-              Check-in now
-            </button>
-          </div>
+          <Reflection  goalName={g.goalname}/>
         </section>
 
         {/* Recent activity */}
-        <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Recent activity</h2>
-          <div className="space-y-3">
-            {[
-              { date: 'Dec 5, 2025', note: 'Check-in completed' },
-              { date: 'Dec 4, 2025', note: 'Check-in completed' },
-              { date: 'Dec 3, 2025', note: 'Missed' },
-              { date: 'Dec 2, 2025', note: 'Check-in completed' },
-            ].map((item, i) => (
-              <div key={i} className="flex items-start gap-3 pb-3 border-b last:border-b-0">
-                <div className="text-xs text-gray-500 font-medium min-w-fit">{item.date}</div>
-                <div className="text-sm text-gray-700">{item.note}</div>
-              </div>
-            ))}
-          </div>
-        </section>
+        {/* insert the activity of the data here */}
+       <History/>
       </main>
     </div>
   );
