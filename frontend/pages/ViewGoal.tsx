@@ -35,6 +35,7 @@ console.log(goal);
     });
 
     const data = await response.json();
+    console.log(data);
     if (data.status === '200') {
       alert('Check-in successful!');
       refetch();

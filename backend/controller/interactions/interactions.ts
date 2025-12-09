@@ -4,6 +4,7 @@ import { Request, Response } from "express";
 import pool from "../../config/neon";
 import { DateTime } from "luxon";
 import {createGoal} from "../../model/createGoal";
+import { stat } from "fs";
 
 
 let interactions = {
@@ -181,10 +182,11 @@ let interactions = {
     goalCheckIn: async (req: Request, res: Response) => {
         try {
             const userId = (req as any).user.sub;
-            const totalcheckins = userId.totalcheckins + 1;
             const { goalname } = req.params;
 
             const goalData = await pool.query('SELECT * FROM goals WHERE userid = $1 and goalname = $2', [userId, goalname]);
+            const totalcheckins = goalData.rows[0].totalcheckins + 1;
+            const longeststreak = goalData.rows[0].longeststreak;
             if(goalData.rowCount === 0){
                 return res.status(404).send({status:"404", message:"Goal not found"});
             }
@@ -215,17 +217,22 @@ let interactions = {
                 const updateQuery = `
                     UPDATE goals
                     SET streak = $1,
-                    SET totalcheckins = $3,
+                        totalcheckins = $2,
+                        longeststreak = CASE 
+                            WHEN $1 > longeststreak THEN $1 
+                            ELSE longeststreak 
+                        END,
                         lastcheckindate = NOW()
-                    WHERE id = $2
+                    WHERE id = $3
                     RETURNING *;
                 `;
                 const newStreak = (diff !== null && diff === 1) ? goal.streak + 1 : 1;
-                const updateValues = [newStreak, totalcheckins,  goal.id];
+                const updateValues = [newStreak, totalcheckins, goal.id];
                 const result = await pool.query(updateQuery, updateValues);
 
                 
                 return res.status(200).json({
+                status: "200",
                 updated: true,
                 message: "Goal check-in successful.",
                 ...result.rows[0],
