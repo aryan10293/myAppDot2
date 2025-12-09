@@ -17,7 +17,6 @@ function useOneGoal(goalname: string)  {
             navigate("/login");
             return;
         } 
-
         return response.json();
         }
     });

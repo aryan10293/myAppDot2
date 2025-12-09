@@ -1,6 +1,5 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import EditGoals from '../pages/EditGoals';
 
 interface Props {
     goal:any;
