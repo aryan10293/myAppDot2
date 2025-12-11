@@ -1,29 +1,27 @@
 import React, { useState } from 'react';
-
-interface ReflectionData {
-  id: string;
-  date: string;
-  text: string;
-}
+import useTags from '../customHook/useTags';
 
 function Reflection({ goalName }: { goalName: string }) {
-  const [reflection, setReflection] = useState<string>('');
-  console.log(goalName)
+    const [reflection, setReflection] = useState<string>('');
+    const { refetch: refetchTags } = useTags(goalName || '');
     const handleSubmit = async (e: React.FormEvent) => {  
-    e.preventDefault();
+        e.preventDefault();
     // Here you would typically send the reflection to your backend server
-    const response = await fetch(`http://localhost:2050/history/${goalName}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: "include",
-      body: JSON.stringify({ text: reflection }),
-    });
+        const response = await fetch(`http://localhost:2050/history/${goalName}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: "include",
+            body: JSON.stringify({ text: reflection }),
+            });
     
     const data = await response.json(); 
     console.log(data)
     setReflection('');
+    if(data.status === "200"){
+        refetchTags();
+    }
   }
 
 
@@ -33,7 +31,6 @@ function Reflection({ goalName }: { goalName: string }) {
     <div className="space-y-6">
       {/* Write reflection section */}
       <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Reflect on today</h2>
         <p className="text-sm text-gray-600 mb-4">
           Take a moment to think about how your day went. What went well? What could you improve?
         </p>

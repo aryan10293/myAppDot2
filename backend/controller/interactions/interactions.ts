@@ -230,7 +230,7 @@ let interactions = {
                 `;
                 const tagUpdate = today.toISODate();
                 const newStreak = (diff !== null && diff === 1) ? goal.streak + 1 : 1;
-                const updateValues = [newStreak, `${tagUpdate}`, totalcheckins, goal.id];
+                const updateValues = [newStreak, `${tagUpdate} | Checked in — stayed consistent for this day`, totalcheckins, goal.id];
                 const result = await pool.query(updateQuery, updateValues);
 
                 
@@ -250,18 +250,35 @@ let interactions = {
     history: async (req: Request, res: Response) => {
         try {
             const userId = (req as any).user.sub;
-            const { goalname } = req.params;
+            const {goalname} = req.params;
+            const {text} = req.body;
 
-            const goalData = await pool.query('SELECT * FROM goals WHERE userid = $1 and goalname = $2', [userId, goalname]);
-            if(goalData.rowCount === 0){
-                return res.status(404).send({status:"404", message:"Goal not found"});
-            }
+            let today: any = DateTime.fromJSDate(new Date())
+            today = today.toISO().slice(0,10);
+            today = DateTime.fromISO(today);
+            today = today.toISODate();
 
-            const goal = goalData.rows[0];
-            console.log(goal);
+            // const goalData = await pool.query('SELECT * FROM goals WHERE userid = $1 and goalname = $2', [userId, goalname]);
+            // if(goalData.rowCount === 0){
+            //     return res.status(404).send({status:"404", message:"Goal not found"});
+            // }
+
+            const updateQuery = `
+                    UPDATE goals
+                    SET tags = array_append(tags, $2)
+                    WHERE goalname = $3 AND userid = $1
+                    RETURNING *;
+                `;
+
+            //const goal = goalData.rows[0];
+            const tagUpdate = `${today} | ${text}`;
+            const updateValues = [userId, tagUpdate, goalname];
+            const result = await pool.query(updateQuery, updateValues);
+
             return res.status(200).json({
                 status: "200",
-                history: "Not implemented yet"
+                message: "reflection added successfully.",
+                ...result.rows[0],
             });
         } catch (error) {
             console.error(error);
@@ -278,8 +295,9 @@ let interactions = {
                 return res.status(404).send({status:"404", message:"Goal not found"});
             }
             const goal = goalData.rows[0];
-            const tags = goal.tags || [];
-            res.status(200).json({tags});
+            const tags = goal.tags.reverse() || [];
+            console.log(tags);
+            res.status(200).json({tags: tags});
             
         } catch (error) {
             console.log(error)

@@ -22,6 +22,7 @@ import useTags from '../customHook/useTags';
 //   weekProgress?: number[];
 //   monthProgress?: number[];
 // }
+// Checked in — stayed consistent for this day
 
 export default function ViewGoal() {
   const { goalname } = useParams<{ goalname: string }>();
