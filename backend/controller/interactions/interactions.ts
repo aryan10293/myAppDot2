@@ -5,6 +5,7 @@ import pool from "../../config/neon";
 import { DateTime } from "luxon";
 import {createGoal} from "../../model/createGoal";
 import { stat } from "fs";
+import { get } from "http";
 
 
 let interactions = {
@@ -217,17 +218,19 @@ let interactions = {
                 const updateQuery = `
                     UPDATE goals
                     SET streak = $1,
-                        totalcheckins = $2,
+                        tags = array_append(tags, $2),
+                        totalcheckins = $3,
                         longeststreak = CASE 
                             WHEN $1 > longeststreak THEN $1 
                             ELSE longeststreak 
                         END,
                         lastcheckindate = NOW()
-                    WHERE id = $3
+                    WHERE id = $4
                     RETURNING *;
                 `;
+                const tagUpdate = today.toISODate();
                 const newStreak = (diff !== null && diff === 1) ? goal.streak + 1 : 1;
-                const updateValues = [newStreak, totalcheckins, goal.id];
+                const updateValues = [newStreak, `${tagUpdate}`, totalcheckins, goal.id];
                 const result = await pool.query(updateQuery, updateValues);
 
                 
@@ -250,7 +253,6 @@ let interactions = {
             const { goalname } = req.params;
 
             const goalData = await pool.query('SELECT * FROM goals WHERE userid = $1 and goalname = $2', [userId, goalname]);
-            console.log(goalData);
             if(goalData.rowCount === 0){
                 return res.status(404).send({status:"404", message:"Goal not found"});
             }
@@ -265,6 +267,25 @@ let interactions = {
             console.error(error);
             return res.status(500).json({ message: error });
         }
+    },
+    getTags: async (req: Request, res: Response) => {
+        try {
+            const userId = (req as any).user.sub;
+            const { goalname } = req.params;
+
+            const goalData = await pool.query('SELECT * FROM goals WHERE userid = $1 and goalname = $2', [userId, goalname]);
+            if(goalData.rowCount === 0){
+                return res.status(404).send({status:"404", message:"Goal not found"});
+            }
+            const goal = goalData.rows[0];
+            const tags = goal.tags || [];
+            res.status(200).json({tags});
+            
+        } catch (error) {
+            console.log(error)
+            res.status(500).send({error})
+        }
+
     }
 }
 export default interactions

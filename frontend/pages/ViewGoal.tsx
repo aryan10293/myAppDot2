@@ -5,6 +5,7 @@ import StatCardTwo  from '../components/StatCardTWo';
 import useOneGoal from '../customHook/getOneGoal';
 import History from '../components/History';
 import Reflection from '../components/Reflection';
+import useTags from '../customHook/useTags';
 
 // interface GoalData {
 //   id: string;
@@ -27,7 +28,8 @@ export default function ViewGoal() {
   const navigate = useNavigate();
   const [timeframe, setTimeframe] = useState<'week' | 'month'>('week');
   const { data: goal, isLoading, refetch } = useOneGoal(goalname || '');
-console.log(goal);
+  const { refetch: refetchTags } = useTags(goalname || '');
+  // i need to update the data of the tags to reflect new checkin
 
   const handleCheckin = async () => {
     const response = await fetch(`http://localhost:2050/checkin/${goalname}`, {
@@ -41,6 +43,7 @@ console.log(goal);
     if (data.status === '200') {
       alert('Check-in successful!');
       refetch();
+      refetchTags();
     }
   };
 
@@ -158,7 +161,7 @@ console.log(goal);
 
         {/* Recent activity */}
         {/* insert the activity of the data here */}
-       <History/>
+       <History goalName={g.goalname} />
       </main>
     </div>
   );

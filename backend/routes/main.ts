@@ -7,6 +7,7 @@ const router = express.Router();
 router.get("/profile", requireAuth, main.getProfile)
 router.get("/goal", requireAuth, interactions.getGoals);
 router.get("/goal/:goalname", requireAuth, interactions.getGoalByName);
+router.get("/tags/:goalname", requireAuth, interactions.getTags);
 
 router.post("/register", main.register);
 router.post("/login", main.login);
