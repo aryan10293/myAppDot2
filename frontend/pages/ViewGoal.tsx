@@ -6,6 +6,7 @@ import ProgressReflection from '../components/ProgressReflection';
 import useOneGoal from '../customHook/getOneGoal';
 import History from '../components/History';
 import useTags from '../customHook/useTags';
+import useCheckins from '../customHook/useCheckins';
 
 // interface GoalData {
 //   id: string;
@@ -29,6 +30,7 @@ export default function ViewGoal() {
   const navigate = useNavigate();
   
   const { data: goal, isLoading, refetch } = useOneGoal(goalname || '');
+  const {  refetch: refetchCheckins } = useCheckins(goalname || '');
   const { refetch: refetchTags } = useTags(goalname || '');
   // i need to update the data of the tags to reflect new checkin
 
@@ -45,6 +47,7 @@ export default function ViewGoal() {
       alert('Check-in successful!');
       refetch();
       refetchTags();
+      refetchCheckins();
     }
   };
 

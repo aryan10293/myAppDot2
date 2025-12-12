@@ -16,7 +16,6 @@ function useCheckins(goalname:string)  {
             navigate("/login");
             return;
         } 
-
         return response.json();
         }
     });

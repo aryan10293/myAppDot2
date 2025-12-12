@@ -3,19 +3,18 @@ import Reflection from './Reflection';
 import useOneGoal from '../customHook/getOneGoal';
 import useCheckins from '../customHook/useCheckins';
 import getWeekRange from './getWeekRange';
-import { get } from 'http';
 
 function ProgressReflection(goalName: { goalName: string }) {
     const [timeframe, setTimeframe] = useState<'week' | 'month'>('week');
     const { data: goal, } = useOneGoal(goalName.goalName || '');
-    const { data: checkins, isLoading: checkinsLoading } = useCheckins(goalName.goalName || '');
+    const { data: checkins } = useCheckins(goalName.goalName || '');
     const {start, end} = getWeekRange();
     const g = goal?.goal || goal || {};
-
     const checkinsData = checkins?.checkInDates ?? [];
-    const weekProgress = g?.weekProgress ?? [0, 0, 0, 0, 0, 0, 0];
+    const weekProgress = checkins?.currentWeekArray ?? [];
+    //const weekProgress = g?.weekProgress ?? [0, 0, 0, 0, 0, 0, 0];
     const monthProgress = g?.monthProgress ?? Array(30).fill(0);
-
+    console.log("checkins array ", weekProgress)
     const progressData = timeframe === 'week' ? weekProgress : monthProgress;
     const maxValue = Math.max(...progressData, 1);
     const daysLabel = timeframe === 'week' ? ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] : [];

@@ -27,13 +27,13 @@ function ProfileHeader(props:any): React.JSX.Element {
     if (isLoading) {
       return <span>Loading...</span>
     }
-
+console.log(props.user)
 
   return (
     <div className="bg-white rounded-2xl border border-gray-100 p-6 flex flex-col sm:flex-row gap-6 items-center">
               {/* Avatar */}
               <div className="flex-shrink-0">
-                {props.user.avatarUrl ?(
+                {false ?(
                   <img src={props.user.avatarUrl} alt={`${props.user.firstname} avatar`} className="h-28 w-28 rounded-full object-cover" />
                 ) : (
                   <div className="h-28 w-28 rounded-full bg-indigo-100 flex items-center justify-center text-2xl font-bold text-indigo-700">

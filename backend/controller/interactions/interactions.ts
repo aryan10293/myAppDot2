@@ -311,18 +311,22 @@ let interactions = {
         try {
             const userId = (req as any).user.sub;
             const { goalname } = req.params;
-            const { start, end } = getCurrentWeekRange();
-            const idk = DateTime.fromJSDate(new Date(start+''))
-            const startOfWeek = DateTime.fromISO(idk);
-            console.log("start of week:", startOfWeek);
-            const currentWeekArray = [0,0,0,0,0,0,0];
+            const { start } = getCurrentWeekRange();
+            const currentWeekArray: boolean[] = [false, false, false, false, false, false, false];
             // if checkin date is in week range return one or true and if not return zero or false
+            // get the dates to be able to show the differnts in time passed. 
 
-            let today: any = DateTime.fromJSDate(new Date())
-            const dayNumber = new Date(start).getDay()
-            const dayNumber2 = new Date("2025-12-11").getDay();
+            let startOfWeek = start + ""; 
 
-            console.log(dayNumber, dayNumber2)
+            let theStartOfWeek: any = startOfWeek ? DateTime.fromJSDate(new Date(startOfWeek)) : null; 
+
+            if(theStartOfWeek){
+                theStartOfWeek = theStartOfWeek.toISO().slice(0,10);
+                theStartOfWeek =  DateTime.fromISO(theStartOfWeek);
+            }
+
+
+            // if the diff is >= 0 || <=6 return true 
 
             
             
@@ -333,12 +337,21 @@ let interactions = {
             const goal = goalData.rows[0];
             const checkInDates = goal.checkindates || [];
 
-            checkInDates.forEach(() => {
-                const checkInDate = new Date(checkInDates);
+            checkInDates.forEach((x:string ) => {
+                let today: any = DateTime.fromJSDate(new Date(x + " "));
 
-            }) 
+                today = today.toISO().slice(0,10);
+                today = DateTime.fromISO(today);
 
-            res.status(200).json({ checkInDates });
+                let diff = theStartOfWeek ? today.diff(theStartOfWeek, 'days').days : null;
+        
+                if(diff !== null && diff >=0 && diff <=6){
+                    currentWeekArray[diff] = true;
+                }
+
+            }) ;
+
+            res.status(200).json({ checkInDates, currentWeekArray });
         } catch (error) {
             console.log(error)
             res.status(500).send({error})
