@@ -4,6 +4,7 @@ import { Request, Response } from "express";
 import pool from "../../config/neon";
 import { DateTime } from "luxon";
 import {createGoal} from "../../model/createGoal";
+import getCurrentWeekRange from "../../config/getWeekRange";
 import { stat } from "fs";
 import { get } from "http";
 
@@ -219,6 +220,7 @@ let interactions = {
                     UPDATE goals
                     SET streak = $1,
                         tags = array_append(tags, $2),
+                        checkindates = array_append(checkindates, $5),
                         totalcheckins = $3,
                         longeststreak = CASE 
                             WHEN $1 > longeststreak THEN $1 
@@ -229,8 +231,9 @@ let interactions = {
                     RETURNING *;
                 `;
                 const tagUpdate = today.toISODate();
+                
                 const newStreak = (diff !== null && diff === 1) ? goal.streak + 1 : 1;
-                const updateValues = [newStreak, `${tagUpdate} | Checked in — stayed consistent for this day`, totalcheckins, goal.id];
+                const updateValues = [newStreak, `${tagUpdate} | Checked in — stayed consistent for this day`, totalcheckins, goal.id, `${tagUpdate}`];
                 const result = await pool.query(updateQuery, updateValues);
 
                 
@@ -296,7 +299,6 @@ let interactions = {
             }
             const goal = goalData.rows[0];
             const tags = goal.tags.reverse() || [];
-            console.log(tags);
             res.status(200).json({tags: tags});
             
         } catch (error) {
@@ -304,6 +306,43 @@ let interactions = {
             res.status(500).send({error})
         }
 
+    },
+    getCheckInDates: async (req: Request, res: Response) => {
+        try {
+            const userId = (req as any).user.sub;
+            const { goalname } = req.params;
+            const { start, end } = getCurrentWeekRange();
+            const idk = DateTime.fromJSDate(new Date(start+''))
+            const startOfWeek = DateTime.fromISO(idk);
+            console.log("start of week:", startOfWeek);
+            const currentWeekArray = [0,0,0,0,0,0,0];
+            // if checkin date is in week range return one or true and if not return zero or false
+
+            let today: any = DateTime.fromJSDate(new Date())
+            const dayNumber = new Date(start).getDay()
+            const dayNumber2 = new Date("2025-12-11").getDay();
+
+            console.log(dayNumber, dayNumber2)
+
+            
+            
+            const goalData = await pool.query('SELECT * FROM goals WHERE userid = $1 and goalname = $2', [userId, goalname]);
+            if(goalData.rowCount === 0){
+                return res.status(404).send({status:"404", message:"Goal not found"});
+            }
+            const goal = goalData.rows[0];
+            const checkInDates = goal.checkindates || [];
+
+            checkInDates.forEach(() => {
+                const checkInDate = new Date(checkInDates);
+
+            }) 
+
+            res.status(200).json({ checkInDates });
+        } catch (error) {
+            console.log(error)
+            res.status(500).send({error})
+        }
     }
 }
 export default interactions

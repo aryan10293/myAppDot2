@@ -11,6 +11,7 @@ const createGoalTable = async () => {
                 frequency VARCHAR(255),
                 streak INTEGER NOT NULL DEFAULT 1,
                 tags TEXT[],
+                checkindates TEXT[],
                 minutes INTEGER NOT NULL DEFAULT 1,
                 longeststreak INTEGER NOT NULL DEFAULT 1,
                 totalcheckins INTEGER NOT NULL DEFAULT 1,

@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Loading from '../components/Loading';
 import StatCardTwo  from '../components/StatCardTWo';
+import ProgressReflection from '../components/ProgressReflection';
 import useOneGoal from '../customHook/getOneGoal';
 import History from '../components/History';
-import Reflection from '../components/Reflection';
 import useTags from '../customHook/useTags';
 
 // interface GoalData {
@@ -22,12 +22,12 @@ import useTags from '../customHook/useTags';
 //   weekProgress?: number[];
 //   monthProgress?: number[];
 // }
-// Checked in — stayed consistent for this day
+
 
 export default function ViewGoal() {
   const { goalname } = useParams<{ goalname: string }>();
   const navigate = useNavigate();
-  const [timeframe, setTimeframe] = useState<'week' | 'month'>('week');
+  
   const { data: goal, isLoading, refetch } = useOneGoal(goalname || '');
   const { refetch: refetchTags } = useTags(goalname || '');
   // i need to update the data of the tags to reflect new checkin
@@ -52,17 +52,12 @@ export default function ViewGoal() {
 
   const g = goal?.goal || goal || {};
   const currentStreak = g.streak;
-  console.log(currentStreak)
   const longestStreak = g?.longeststreak ?? 0;
   const totalCompletions = g?.totalcheckins ?? 0;
-  const weekProgress = g?.weekProgress ?? [0, 0, 0, 0, 0, 0, 0];
-  const monthProgress = g?.monthProgress ?? Array(30).fill(0);
+
   const lastCheckin = g?.lastcheckindate ? new Date(g.lastcheckindate).toLocaleDateString() : 'Never';
   const createdDate = g?.createdAt ? new Date(g.createdAt).toLocaleDateString() : 'Unknown';
 
-  const progressData = timeframe === 'week' ? weekProgress : monthProgress;
-  const maxValue = Math.max(...progressData, 1);
-  const daysLabel = timeframe === 'week' ? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] : [];
 
   return (
     <div className="min-h-screen bg-slate-50 p-6">
@@ -110,55 +105,7 @@ export default function ViewGoal() {
         </section>
 
         {/* Progress visualization */}
-        <section className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-          {/* Weekly/monthly chart */}
-          <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-900">Progress</h2>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setTimeframe('week')}
-                  className={`px-3 py-1 text-xs rounded-md ${timeframe === 'week' ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-700'}`}
-                >
-                  Week
-                </button>
-                <button
-                  onClick={() => setTimeframe('month')}
-                  className={`px-3 py-1 text-xs rounded-md ${timeframe === 'month' ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-700'}`}
-                >
-                  Month
-                </button>
-              </div>
-            </div>
-
-            {/* Bar chart */}
-            <div className="flex items-end gap-2 h-40 justify-between">
-              {progressData.slice(0, timeframe === 'week' ? 7 : 30).map((value, i) => (
-                <div key={i} className="flex flex-col items-center gap-2 flex-1 min-w-0">
-                  <div className="w-full bg-gray-100 rounded-md overflow-hidden h-32 flex flex-col-reverse">
-                    <div
-                      className="bg-indigo-500 transition-all duration-200"
-                      style={{ height: `${maxValue > 0 ? (value / maxValue) * 100 : 0}%` }}
-                    />
-                  </div>
-                  {timeframe === 'week' && (
-                    <label className="text-xs font-medium text-gray-500 text-center">{daysLabel[i]}</label>
-                  )}
-                  {timeframe === 'month' && i % 5 === 0 && (
-                    <label className="text-xs font-medium text-gray-500">{i + 1}</label>
-                  )}
-                </div>
-              ))}
-            </div>
-
-            <p className="mt-4 text-xs text-gray-500">
-              {timeframe === 'week' ? "This week's activity" : "This month's activity"}
-            </p>
-          </div>
-
-          {/* Quick insights sidebar */}
-          <Reflection  goalName={g.goalname}/>
-        </section>
+        <ProgressReflection goalName={g.goalname} />
 
         {/* Recent activity */}
         {/* insert the activity of the data here */}
