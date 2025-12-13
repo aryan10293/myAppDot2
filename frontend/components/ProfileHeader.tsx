@@ -4,9 +4,13 @@ import { useNavigate } from "react-router-dom";
 import ProgressRing from './ProgressRing';
 import { useQuery } from "@tanstack/react-query";
 import useGoals from '../customHook/goals';
-function ProfileHeader(props:any): React.JSX.Element {
+import useUser from '../customHook/user';
+function ProfileHeader(): React.JSX.Element {
     const navigate = useNavigate();
-    const { data: goals, isLoading, refetch } = useGoals();
+    const { data: goals, isLoading } = useGoals();
+    const { data: user } = useUser();
+    const loginUser = user?.user || user || {};
+
 
   const { data:idk } = useQuery({
     queryKey: ['idk'],
@@ -27,17 +31,16 @@ function ProfileHeader(props:any): React.JSX.Element {
     if (isLoading) {
       return <span>Loading...</span>
     }
-console.log(props.user)
 
   return (
     <div className="bg-white rounded-2xl border border-gray-100 p-6 flex flex-col sm:flex-row gap-6 items-center">
               {/* Avatar */}
               <div className="flex-shrink-0">
                 {false ?(
-                  <img src={props.user.avatarUrl} alt={`${props.user.firstname} avatar`} className="h-28 w-28 rounded-full object-cover" />
+                  <img src={loginUser.avatarUrl} alt={`${loginUser.firstname} avatar`} className="h-28 w-28 rounded-full object-cover" />
                 ) : (
                   <div className="h-28 w-28 rounded-full bg-indigo-100 flex items-center justify-center text-2xl font-bold text-indigo-700">
-                    {props.user.firstname?.[0] ?? "U"}
+                    {loginUser.firstname?.[0] ?? "U"}
                   </div>
                 )}
               </div>
@@ -45,7 +48,7 @@ console.log(props.user)
                 <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
                   <div>
                     <div className="text-lg font-semibold text-gray-900">
-                      {props.user.firstname } {props.user.lastname}
+                      {loginUser.firstname } {loginUser.lastname}
                       
                     </div>
                             {/* czn enter a a member since date if you want later  */}
@@ -54,7 +57,7 @@ console.log(props.user)
 
                   <div className="flex gap-3">
                             {/* add soemthing in database that keep track fo streak */}
-                    <StatCard label="Current streak" value={props.update ? props.user.streak +1: props.user.streak} />
+                    <StatCard label="Current streak" value={loginUser.streak} />
                   </div>
                 </div>
 
