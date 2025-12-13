@@ -36,7 +36,7 @@ function ProfileHeader(): React.JSX.Element {
     <div className="bg-white rounded-2xl border border-gray-100 p-6 flex flex-col sm:flex-row gap-6 items-center">
               {/* Avatar */}
               <div className="flex-shrink-0">
-                {false ?(
+                {loginUser.avatarUrl ?(
                   <img src={loginUser.avatarUrl} alt={`${loginUser.firstname} avatar`} className="h-28 w-28 rounded-full object-cover" />
                 ) : (
                   <div className="h-28 w-28 rounded-full bg-indigo-100 flex items-center justify-center text-2xl font-bold text-indigo-700">

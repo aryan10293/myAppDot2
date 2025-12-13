@@ -67,9 +67,22 @@ export default function ViewGoal() {
       <main className="max-w-4xl mx-auto">
         {/* Header */}
         <header className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <button onClick={() => navigate('/editgoals')} className="text-indigo-600 hover:underline text-sm">
-            ← Back to goals
-          </button>
+          <div className="flex flex-col gap-2">
+            <button
+              onClick={() => navigate('/editgoals')}
+              className="text-indigo-600 hover:underline text-sm text-left"
+            >
+              ← Back to goals
+            </button>
+
+            <button
+              onClick={() => navigate('/profile')}
+              className="text-indigo-600 hover:underline text-sm text-left"
+            >
+              ← Back to profile
+            </button>
+          </div>
+
           <div className="flex gap-3">
             <button onClick={() => navigate(`/editgoals`)} className="text-sm px-3 py-2 border rounded-md bg-white hover:bg-gray-50">
               Edit goal
