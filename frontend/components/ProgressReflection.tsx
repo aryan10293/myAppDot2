@@ -12,9 +12,9 @@ function ProgressReflection(goalName: { goalName: string }) {
     const g = goal?.goal || goal || {};
     const checkinsData = checkins?.checkInDates ?? [];
     const weekProgress = checkins?.currentWeekArray ?? [];
+    const monthProgress = checkins?.currentMonthArray ?? [];
     //const weekProgress = g?.weekProgress ?? [0, 0, 0, 0, 0, 0, 0];
-    const monthProgress = g?.monthProgress ?? Array(30).fill(0);
-    console.log("checkins array ", weekProgress)
+    console.log("checkins array ", monthProgress)
     const progressData = timeframe === 'week' ? weekProgress : monthProgress;
     const maxValue = Math.max(...progressData, 1);
     const daysLabel = timeframe === 'week' ? ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] : [];

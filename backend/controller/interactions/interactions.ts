@@ -312,7 +312,17 @@ let interactions = {
             const userId = (req as any).user.sub;
             const { goalname } = req.params;
             const { start } = getCurrentWeekRange();
+            let currentMonthArray: boolean[];
+            const currentMonth = start.getMonth()+1
             const currentWeekArray: boolean[] = [false, false, false, false, false, false, false];
+            if (currentMonth === 1 || currentMonth === 3 || currentMonth === 5 || currentMonth === 7 || currentMonth === 8 || currentMonth === 10 || currentMonth === 12){
+                currentMonthArray = new Array(31).fill(false);
+            } else if (currentMonth === 4 || currentMonth === 6 || currentMonth === 9 || currentMonth === 11){
+                currentMonthArray = new Array(30).fill(false);
+            } else {
+                currentMonthArray = new Array(28).fill(false);
+            }
+            
             // if checkin date is in week range return one or true and if not return zero or false
             // get the dates to be able to show the differnts in time passed. 
 
@@ -336,8 +346,10 @@ let interactions = {
             }
             const goal = goalData.rows[0];
             const checkInDates = goal.checkindates || [];
-
             checkInDates.forEach((x:string ) => {
+                if(Number(x.split("-")[1]) === currentMonth){
+                    currentMonthArray[Number(x.split("-")[2])-1] = true;
+                }
                 let today: any = DateTime.fromJSDate(new Date(x + " "));
 
                 today = today.toISO().slice(0,10);
@@ -351,7 +363,7 @@ let interactions = {
 
             }) ;
 
-            res.status(200).json({ checkInDates, currentWeekArray });
+            res.status(200).json({ checkInDates, currentWeekArray, currentMonthArray });
         } catch (error) {
             console.log(error)
             res.status(500).send({error})
