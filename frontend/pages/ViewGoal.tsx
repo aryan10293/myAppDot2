@@ -33,7 +33,6 @@ export default function ViewGoal() {
   const {  refetch: refetchCheckins } = useCheckins(goalname || '');
   const { refetch: refetchTags } = useTags(goalname || '');
   // i need to update the data of the tags to reflect new checkin
-console.log(goalname)
   const handleCheckin = async () => {
     const response = await fetch(`http://localhost:2050/checkin/${goalname}`, {
       method: 'PATCH',

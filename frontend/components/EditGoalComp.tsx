@@ -104,7 +104,7 @@ function EditGoalComp({goal, refetch} : Props ) {
                 </form>
                 </div>
             </details>
-            <Link   to={`/goal/${goal.goalname}`} className={`${open ? "hidden" : "inline-flex"} cursor-pointer items-center gap-2 px-3 py-1 rounded-md text-xs bg-white border hover:bg-gray-50`}>
+            <Link   to={`/goal/${goal.urlname}`} className={`${open ? "hidden" : "inline-flex"} cursor-pointer items-center gap-2 px-3 py-1 rounded-md text-xs bg-white border hover:bg-gray-50`}>
                 View
             </Link>
             </div>

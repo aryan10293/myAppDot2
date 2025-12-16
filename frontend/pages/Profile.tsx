@@ -23,11 +23,12 @@ export default function Profile(): React.JSX.Element {
   const navigate = useNavigate();
   const [update, setUpdate] = useState<boolean>(false);
   const [count, setCount] = useState<boolean>(false);
-  const { data: user, isLoading } = useUser();
+  const { data: user, isLoading, refetch } = useUser();
 
 
 
   const checkIn = async () => {
+    console.log("checkin")
     const response = await fetch("http://localhost:2050/checkin", {
       method: "PATCH",
       headers: {
@@ -36,8 +37,11 @@ export default function Profile(): React.JSX.Element {
         credentials: "include",
     })
     const result = await response.json();
+    // refecth user data to update streak
+    refetch()
     setUpdate(result.updated);
     setCount(true);
+    console.log(result)
   } 
 
   if (isLoading) return <Loading overlay message="Loading profile..." />;
@@ -112,8 +116,9 @@ export default function Profile(): React.JSX.Element {
             <SmallCard>
               <div className="text-sm text-gray-600">Quick actions</div>
               <div className="mt-3 flex flex-col gap-2">
+                {/* this shoudl me a link to edit and and add goal page */}
                 <button onClick={checkIn} className="w-full text-sm px-3 py-2 bg-indigo-600 text-white rounded-md">Add goal</button>
-                <button onClick={checkIn} disabled={count} className="w-full text-sm px-3 py-2 border rounded-md">Check-in</button>
+                <button onClick={checkIn} disabled={false} className="w-full text-sm px-3 py-2 border rounded-md">Check-in</button>
               </div>
             </SmallCard>
           </aside>

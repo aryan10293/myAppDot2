@@ -32,6 +32,7 @@ let interactions = {
             );
 
             const user = rows[0];
+            console.log(user.last_checkin, 12345678)
 
             if (!user) return res.status(404).json({ message: "User not found" });
 
@@ -53,8 +54,9 @@ let interactions = {
                 SET streak = $1,
                     last_checkin = NOW()
                 WHERE id = $2
-                RETURNING *;
+                RETURNING *;    
             `;
+            console.log(today, checkin)
 
             if(diff <= 0){
                 return res.status(200).json({
@@ -90,19 +92,21 @@ let interactions = {
         const user = rows[0];
 
         if (!user) return res.status(404).json({ message: "User not found" });
-        const raw = user.last_checkin + ""; 
+        const d = user.last_checkin; // JS Date object
 
-        let checkin: any = DateTime.fromJSDate(new Date(raw)); 
-        let today: any = DateTime.fromJSDate(new Date())
+        const dateOnly = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`;
+        console.log('qwertyuiopolkjhgfd', dateOnly, "last checkin here");
+        //const raw = user.last_checkin + ""; 
+        //console.log('qwertyuiopolkjhgfd', raw, "raw here");
+        console.log(dateOnly, "date only here");
 
-        checkin = checkin.toISO().slice(0,10);
-        checkin =  DateTime.fromISO(checkin);
+        let checkin = DateTime.fromISO(dateOnly, { zone: "America/Los_Angeles" }).startOf("day");
+        let today  = DateTime.now().setZone("America/Los_Angeles").startOf("day");
 
-        today = today.toISO().slice(0,10);
-        today = DateTime.fromISO(today);
-
+        const daysApart = Math.round(today.diff(checkin, "days").days);
+        
         const diff = today.diff(checkin, 'days').days
-
+        console.log(daysApart, "days apart", diff, "diff here");
         if(diff>1){
             const updateQuery = `
                 UPDATE users
