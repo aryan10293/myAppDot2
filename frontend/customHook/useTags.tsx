@@ -5,6 +5,7 @@ function useTags(goalName: string)  {
     return useQuery({
         queryKey: ["tags", goalName],
         queryFn: async () => {
+            console.log(goalName)
         const response = await fetch(`http://localhost:2050/tags/${goalName}`, {
             method: "GET",
             headers: {

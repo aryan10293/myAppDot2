@@ -83,7 +83,7 @@ function ProfileHeader(): React.JSX.Element {
                           <div>
                             <button
                               className="text-xs px-2 py-1 bg-gray-100 rounded-md text-gray-700"
-                              onClick={() => navigate(`/goal/${g.goalname}`)}
+                              onClick={() => navigate(`/goal/${g.urlname}`)}
                             >
                               View
                             </button>

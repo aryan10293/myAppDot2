@@ -171,7 +171,7 @@ let interactions = {
         try {
             const userId = (req as any).user.sub;
             const { goalname } = req.params;
-            const data = await pool.query('SELECT * FROM goals WHERE userid = $1 and goalname = $2', [userId, goalname]);
+            const data = await pool.query('SELECT * FROM goals WHERE userid = $1 and urlname = $2', [userId, goalname]);
             if(data.rowCount === 0){
                 return res.status(404).send({status:"404", message:"Goal not found"});
             }
@@ -186,7 +186,7 @@ let interactions = {
             const userId = (req as any).user.sub;
             const { goalname } = req.params;
 
-            const goalData = await pool.query('SELECT * FROM goals WHERE userid = $1 and goalname = $2', [userId, goalname]);
+            const goalData = await pool.query('SELECT * FROM goals WHERE userid = $1 and urlname = $2', [userId, goalname]);
             const totalcheckins = goalData.rows[0].totalcheckins + 1;
             const longeststreak = goalData.rows[0].longeststreak;
             if(goalData.rowCount === 0){
@@ -293,7 +293,7 @@ let interactions = {
             const userId = (req as any).user.sub;
             const { goalname } = req.params;
 
-            const goalData = await pool.query('SELECT * FROM goals WHERE userid = $1 and goalname = $2', [userId, goalname]);
+            const goalData = await pool.query('SELECT * FROM goals WHERE userid = $1 and urlname = $2', [userId, goalname]);
             if(goalData.rowCount === 0){
                 return res.status(404).send({status:"404", message:"Goal not found"});
             }
@@ -338,9 +338,9 @@ let interactions = {
 
             // if the diff is >= 0 || <=6 return true 
 
-            
-            
-            const goalData = await pool.query('SELECT * FROM goals WHERE userid = $1 and goalname = $2', [userId, goalname]);
+
+
+            const goalData = await pool.query('SELECT * FROM goals WHERE userid = $1 and urlname = $2', [userId, goalname]);
             if(goalData.rowCount === 0){
                 return res.status(404).send({status:"404", message:"Goal not found"});
             }
