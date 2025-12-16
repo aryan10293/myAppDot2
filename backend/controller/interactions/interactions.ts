@@ -259,7 +259,7 @@ let interactions = {
             const userId = (req as any).user.sub;
             const {goalname} = req.params;
             const {text} = req.body;
-
+            console.log(goalname)
             let today: any = DateTime.fromJSDate(new Date())
             today = today.toISO().slice(0,10);
             today = DateTime.fromISO(today);
@@ -273,7 +273,7 @@ let interactions = {
             const updateQuery = `
                     UPDATE goals
                     SET tags = array_append(tags, $2)
-                    WHERE goalname = $3 AND userid = $1
+                    WHERE urlname = $3 AND userid = $1
                     RETURNING *;
                 `;
 

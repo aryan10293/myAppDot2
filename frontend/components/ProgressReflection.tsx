@@ -75,7 +75,7 @@ function ProgressReflection(goalName: { goalName: string }) {
           </div>
 
           {/* Quick insights sidebar */}
-          <Reflection  goalName={g.goalname}/>
+          <Reflection  goalName={g.urlname}/>
         </section>
   )
 }
