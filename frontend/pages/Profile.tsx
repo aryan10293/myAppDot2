@@ -8,6 +8,7 @@ import Notes from "../components/Notes";
 import SmallCard from "../components/SmallCard";
 import Achievements from "../components/Achievements";
 import AccountInfo from "../components/AccountInfo";
+import { Link } from "react-router-dom";
 
 const buddies = [
   { id: "b1", name: "Alice", avatarUrl: null },
@@ -117,7 +118,7 @@ export default function Profile(): React.JSX.Element {
               <div className="text-sm text-gray-600">Quick actions</div>
               <div className="mt-3 flex flex-col gap-2">
                 {/* this shoudl me a link to edit and and add goal page */}
-                <button onClick={checkIn} className="w-full text-sm px-3 py-2 bg-indigo-600 text-white rounded-md">Add goal</button>
+                <button onClick={() => navigate("/editgoals")} className="w-full text-sm px-3 py-2 bg-indigo-600 text-white rounded-md">Add goal</button>
                 <button onClick={checkIn} disabled={false} className="w-full text-sm px-3 py-2 border rounded-md">Check-in</button>
               </div>
             </SmallCard>
