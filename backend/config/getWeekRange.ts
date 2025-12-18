@@ -1,17 +1,22 @@
 function getCurrentWeekRange() {
-  const today = new Date();
+  const now = new Date();
 
-  // Get the day of the week (0 = Sunday, 1 = Monday, etc.)
-  const dayOfWeek = today.getDay();
+  // Use UTC day (0 = Sunday)
+  const dayOfWeek = now.getUTCDay();
 
-  // Calculate start (Sunday)
-  const start = new Date(today);
-  start.setDate(today.getDate() - dayOfWeek);
+  // Start of week (Sunday UTC)
+  const start = new Date(now);
+  start.setUTCDate(now.getUTCDate() - dayOfWeek);
+  start.setUTCHours(0, 0, 0, 0);
 
-  // Calculate end (Saturday)
+  // End of week (Saturday UTC)
   const end = new Date(start);
-  end.setDate(start.getDate() + 6);
+  end.setUTCDate(start.getUTCDate() + 6);
+  end.setUTCHours(23, 59, 59, 999);
 
-  return { start, end };
+  return {
+    start: start.toISOString(),
+    end: end.toISOString()
+  };
 }
 export default getCurrentWeekRange;

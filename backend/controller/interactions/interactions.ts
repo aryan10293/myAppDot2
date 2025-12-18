@@ -32,17 +32,14 @@ let interactions = {
             );
 
             const user = rows[0];
-            console.log(user.last_checkin, 12345678)
 
             if (!user) return res.status(404).json({ message: "User not found" });
 
-            const d = user.last_checkin;
-
-            let checkin = DateTime.fromISO(d, { zone: user.time_zone }).startOf("day");
+            let checkin = DateTime.fromJSDate(user.last_checkin, { zone: user.time_zone }).startOf("day");
             let today  = DateTime.now().setZone(user.time_zone).startOf("day");
 
             const diff = today.diff(checkin, 'days').days
-
+            console.log(diff, 'this is the diff')
             const updateQuery = `
                 UPDATE users
                 SET streak = $1,
@@ -85,17 +82,11 @@ let interactions = {
         const user = rows[0];
 
         if (!user) return res.status(404).json({ message: "User not found" });
-        const d = user.last_checkin;
 
-        const dateOnly = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`;
-
-        let checkin = DateTime.fromISO(dateOnly, { zone: user.time_zone }).startOf("day");
+        let checkin = DateTime.fromJSDate(user.last_checkin).setZone(user.time_zone).startOf("day");
         let today  = DateTime.now().setZone(user.time_zone).startOf("day");
-
-        const daysApart = Math.round(today.diff(checkin, "days").days);
         
         const diff = today.diff(checkin, 'days').days
-
         if(diff>1){
             const updateQuery = `
                 UPDATE users
@@ -291,6 +282,7 @@ let interactions = {
                 return res.status(404).send({status:"404", message:"Goal not found"});
             }
             const goal = goalData.rows[0];
+            console.log(goal.tags);
             const tags = goal.tags.reverse() || [];
             res.status(200).json({tags: tags});
             
@@ -306,7 +298,7 @@ let interactions = {
             const { goalname } = req.params;
             const { start } = getCurrentWeekRange();
             let currentMonthArray: boolean[];
-            const currentMonth = start.getMonth()+1
+            const currentMonth = new Date(start).getMonth()+1
             const currentWeekArray: boolean[] = [false, false, false, false, false, false, false];
             if (currentMonth === 1 || currentMonth === 3 || currentMonth === 5 || currentMonth === 7 || currentMonth === 8 || currentMonth === 10 || currentMonth === 12){
                 currentMonthArray = new Array(31).fill(false);
@@ -319,43 +311,33 @@ let interactions = {
             // if checkin date is in week range return one or true and if not return zero or false
             // get the dates to be able to show the differnts in time passed. 
 
-            let startOfWeek = start + ""; 
-
-            let theStartOfWeek: any = startOfWeek ? DateTime.fromJSDate(new Date(startOfWeek)) : null; 
-
-            if(theStartOfWeek){
-                theStartOfWeek = theStartOfWeek.toISO().slice(0,10);
-                theStartOfWeek =  DateTime.fromISO(theStartOfWeek);
-            }
-
-
-            // if the diff is >= 0 || <=6 return true 
-
-
-
+            let theStartOfWeek: any = DateTime.fromISO(start, { zone: "America/Los_Angeles" }).startOf("day");
+            
             const goalData = await pool.query('SELECT * FROM goals WHERE userid = $1 and urlname = $2', [userId, goalname]);
             if(goalData.rowCount === 0){
                 return res.status(404).send({status:"404", message:"Goal not found"});
             }
+
             const goal = goalData.rows[0];
             const checkInDates = goal.checkindates || [];
-            checkInDates.forEach((x:string ) => {
-                if(Number(x.split("-")[1]) === currentMonth){
-                    currentMonthArray[Number(x.split("-")[2])-1] = true;
+
+            if( checkInDates.length === 0){
+                return  res.status(200).json({ checkInDates: [], currentWeekArray, currentMonthArray });
+            }
+
+            for(let i=0; i<checkInDates.length; i++){ {
+                let today: any = DateTime.fromJSDate(checkInDates[i], { zone: "America/Los_Angeles" }).startOf("day");
+                if(today.month === currentMonth && today.year === theStartOfWeek.year){
+                    currentMonthArray[today.day-1] = true;
                 }
-                let today: any = DateTime.fromJSDate(new Date(x + " "));
-
-                today = today.toISO().slice(0,10);
-                today = DateTime.fromISO(today);
-
+                
                 let diff = theStartOfWeek ? today.diff(theStartOfWeek, 'days').days : null;
-        
+
                 if(diff !== null && diff >=0 && diff <=6){
                     currentWeekArray[diff] = true;
                 }
 
-            }) ;
-
+            } };
             res.status(200).json({ checkInDates, currentWeekArray, currentMonthArray });
         } catch (error) {
             console.log(error)
