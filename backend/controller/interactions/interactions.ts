@@ -38,9 +38,7 @@ let interactions = {
 
             const d = user.last_checkin;
 
-            const dateOnly = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`;
-
-            let checkin = DateTime.fromISO(dateOnly, { zone: user.time_zone }).startOf("day");
+            let checkin = DateTime.fromISO(d, { zone: user.time_zone }).startOf("day");
             let today  = DateTime.now().setZone(user.time_zone).startOf("day");
 
             const diff = today.diff(checkin, 'days').days
@@ -97,7 +95,7 @@ let interactions = {
         const daysApart = Math.round(today.diff(checkin, "days").days);
         
         const diff = today.diff(checkin, 'days').days
-        
+
         if(diff>1){
             const updateQuery = `
                 UPDATE users
