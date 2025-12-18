@@ -17,7 +17,6 @@ function Reflection({ goalName }: { goalName: string }) {
             });
     
     const data = await response.json(); 
-    console.log(data)
     setReflection('');
     if(data.status === "200"){
         refetchTags();

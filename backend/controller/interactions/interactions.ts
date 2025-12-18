@@ -178,22 +178,15 @@ let interactions = {
             }
 
             const goal = goalData.rows[0];
+            console.log(goal.lastcheckindate, 'goal last checkin date here')
 
-            const lastCheckinRaw = goal.lastcheckindate + ""; 
+            // switch time zone form hard cided to what the user has stored in database
+            let lastCheckin: any = DateTime.fromJSDate(goal.lastcheckindate).setZone("America/Los_Angeles").startOf("day"); 
+            let today: any = DateTime.fromJSDate(new Date()).setZone("America/Los_Angeles").startOf("day");
 
-            let lastCheckin: any = lastCheckinRaw ? DateTime.fromJSDate(new Date(lastCheckinRaw)) : null; 
-            let today: any = DateTime.fromJSDate(new Date())
-
-            if(lastCheckin){
-                lastCheckin = lastCheckin.toISO().slice(0,10);
-                lastCheckin =  DateTime.fromISO(lastCheckin);
-            }
-
-            today = today.toISO().slice(0,10);
-            today = DateTime.fromISO(today);
-
-            let diff = lastCheckin ? today.diff(lastCheckin, 'days').days : null;
-
+            let diff = today.diff(lastCheckin, 'days').days ;
+            console.log(today, 'this is the diff for goal checkin')
+            console.log(lastCheckin, 'last checkin date here for goal')
             if(diff !== null && diff <= 0){
                 return res.status(200).json({
                     updated: false,

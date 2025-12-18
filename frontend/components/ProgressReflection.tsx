@@ -13,7 +13,6 @@ function ProgressReflection(goalName: { goalName: string }) {
     const checkinsData = checkins?.checkInDates ?? [];
     const weekProgress = checkins?.currentWeekArray ?? [];
     const monthProgress = checkins?.currentMonthArray ?? [];
-    console.log(monthProgress, 'weekprogress here');
     //const weekProgress = g?.weekProgress ?? [0, 0, 0, 0, 0, 0, 0];
 
     const progressData = timeframe === 'week' ? weekProgress : monthProgress;

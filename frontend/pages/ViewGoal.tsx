@@ -7,6 +7,7 @@ import useOneGoal from '../customHook/getOneGoal';
 import History from '../components/History';
 import useTags from '../customHook/useTags';
 import useCheckins from '../customHook/useCheckins';
+import { DateTime } from "luxon";
 
 // interface GoalData {
 //   id: string;
@@ -30,6 +31,7 @@ export default function ViewGoal() {
   const navigate = useNavigate();
   
   const { data: goal, isLoading, refetch } = useOneGoal(goalname || '');
+
   const {  refetch: refetchCheckins } = useCheckins(goalname || '');
   const { refetch: refetchTags } = useTags(goalname || '');
   // i need to update the data of the tags to reflect new checkin
@@ -57,8 +59,14 @@ export default function ViewGoal() {
   const longestStreak = g?.longeststreak ?? 0;
   const totalCompletions = g?.totalcheckins ?? 0;
 
-  const lastCheckin = g?.lastcheckindate ? new Date(g.lastcheckindate).toLocaleDateString() : 'Never';
-  const createdDate = g?.createdAt ? new Date(g.createdAt).toLocaleDateString() : 'Unknown';
+ const lastCheckin = g?.lastcheckindate
+  ? DateTime.fromISO(g.lastcheckindate)
+      .setZone("America/Los_Angeles")
+      .toLocaleString(DateTime.DATE_MED)
+  : "Never";
+
+  console.log('Last check-in date:', lastCheckin);
+  const createdDate = g?.createddate ? new Date(g.createddate).toLocaleDateString() : 'Unknown';
 
 
   return (
