@@ -1,22 +1,20 @@
-function getCurrentWeekRange() {
-  const now = new Date();
+import { DateTime } from "luxon";
 
-  // Use UTC day (0 = Sunday)
-  const dayOfWeek = now.getUTCDay();
+function getCurrentWeekRange(zone = "America/Los_Angeles") {
+  const now = DateTime.now().setZone(zone);
 
-  // Start of week (Sunday UTC)
-  const start = new Date(now);
-  start.setUTCDate(now.getUTCDate() - dayOfWeek);
-  start.setUTCHours(0, 0, 0, 0);
+  // Luxon: weekday = 1 (Mon) ... 7 (Sun)
+  const daysSinceSunday = now.weekday % 7;
 
-  // End of week (Saturday UTC)
-  const end = new Date(start);
-  end.setUTCDate(start.getUTCDate() + 6);
-  end.setUTCHours(23, 59, 59, 999);
+  const start = now
+    .minus({ days: daysSinceSunday })
+    .startOf("day");
 
-  return {
-    start: start.toISOString(),
-    end: end.toISOString()
-  };
+  const end = start
+    .plus({ days: 6 })
+    .endOf("day");
+
+  return { start, end }; // DateTime objects
 }
+
 export default getCurrentWeekRange;

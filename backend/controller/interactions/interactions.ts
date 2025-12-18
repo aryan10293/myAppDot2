@@ -305,7 +305,7 @@ let interactions = {
             // if checkin date is in week range return one or true and if not return zero or false
             // get the dates to be able to show the differnts in time passed. 
 
-            let theStartOfWeek: any = DateTime.fromISO(start, { zone: "America/Los_Angeles" }).startOf("day");
+            let theStartOfWeek: any = DateTime.fromJSDate(start.toJSDate(), { zone: "America/Los_Angeles" }).startOf("day");
             
             const goalData = await pool.query('SELECT * FROM goals WHERE userid = $1 and urlname = $2', [userId, goalname]);
             if(goalData.rowCount === 0){
@@ -326,7 +326,8 @@ let interactions = {
                 }
                 
                 let diff = theStartOfWeek ? today.diff(theStartOfWeek, 'days').days : null;
-
+                console.log(theStartOfWeek)
+                console.log(today)
                 if(diff !== null && diff >=0 && diff <=6){
                     currentWeekArray[diff] = true;
                 }
