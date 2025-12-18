@@ -25,6 +25,7 @@ function EditGoalComp({goal, refetch} : Props ) {
     if(data.status === "200"){
         alert(data.message);
         refetch();
+        //window.location.reload();
     }
   }
   const handleEdit = async (e:any, ) => {
@@ -46,7 +47,7 @@ function EditGoalComp({goal, refetch} : Props ) {
     }
   }
   return (
-    <li key={goal.id} className="border border-gray-100 rounded-md overflow">
+    <li className="border border-gray-100 rounded-md overflow">
         <div className={`p-3 flex items-start ${open? "" : "justify-between"} gap-3`}>
             <div className="min-w-0">
             <div className="text-sm font-semibold text-gray-900 truncate">{open ? " " : goal.goalname}</div>

@@ -9,21 +9,6 @@ import useTags from '../customHook/useTags';
 import useCheckins from '../customHook/useCheckins';
 import { DateTime } from "luxon";
 
-// interface GoalData {
-//   id: string;
-//   goalname: string;
-//   description?: string;
-//   frequency: string;
-//   minutes: number;
-//   privacy: string;
-//   currentStreak: number;
-//   longestStreak: number;
-//   totalCompletions: number;
-//   createdAt: string;
-//   lastCheckinDate?: string;
-//   weekProgress?: number[];
-//   monthProgress?: number[];
-// }
 
 
 export default function ViewGoal() {

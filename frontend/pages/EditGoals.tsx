@@ -12,6 +12,8 @@ export default function EditGoals(): React.JSX.Element {
     const [description, setDescription] = useState<string>("");
     const [privacy, setPrivacy] = useState<string>("private");
     const [frequency, setFrequency] = useState<string>("daily");
+    const [showAll, setShowAll ] = useState<boolean>(false);
+    const [count, setCount] = useState<number>(3);
 
   const handleCreate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -35,6 +37,15 @@ export default function EditGoals(): React.JSX.Element {
             refetch();
         }
     };
+
+    const displayOfGoals = () => {
+      setShowAll(!showAll);
+      if(!showAll){
+        setCount(goals.length);
+      } else {
+        setCount(3);
+      }
+    }
 
 
   if (isLoading) return <Loading overlay message="Loading goals..." />;
@@ -107,7 +118,13 @@ export default function EditGoals(): React.JSX.Element {
             <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm flex-1 overflow-auto min-h-[220px]">
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold text-gray-900">Your goals</h2>
-                <span className="text-xs text-gray-500">{goals.length} goals</span>
+                {/* if goals.length is less than 
+                3 it should show 3 goals, 2goals whateve
+
+                if goals.length is greater that 3 and show alll is truye display 
+                all goals or 4 goals etx...
+                */}
+                <span className="text-xs text-gray-500">{goals.length} {goals.length === 1 ? "goal" : "goals"}</span>
               </div>
               {goals.length === 0 ? (
             <div className="bg-white rounded-2xl  border-gray-100 p-6  h-full flex items-center justify-center">
@@ -116,14 +133,20 @@ export default function EditGoals(): React.JSX.Element {
               ) : (
                 <div className="space-y-4">
                   <ul className="mt-4 space-y-3">
-                    {goals.map((g) => (
-                        <EditGoalComp goal={g} refetch={refetch} />
+                    {goals.slice(0, 3).map((g) => (
+                        <EditGoalComp key={g.id} goal={g} refetch={refetch} />
                     ))}
-                    {/* onClick={showAll} */}
-                    {/* {number === 3 ? "Show All" : "Show 3"} */}
-                    <div className="mt-3">
-                      <button className="px-4 py-2 bg-indigo-600 text-white rounded-md text-sm hover:bg-indigo-700">Show All</button>
-                    </div>
+
+                    {showAll && goals.slice(3).map((g) => (
+                        <EditGoalComp key={g.id} goal={g} refetch={refetch} />
+                    ))}
+                      <div className="mt-3">
+                        <button
+                         className="px-4 py-2 bg-indigo-600 text-white rounded-md text-sm hover:bg-indigo-700"
+                        onClick={displayOfGoals}
+                         >{showAll ? "Show Less" : "Show All"}</button>
+                      </div>
+                
                   </ul>
                 </div>
               )}
