@@ -5,10 +5,12 @@ import ProgressRing from './ProgressRing';
 import { useQuery } from "@tanstack/react-query";
 import useGoals from '../customHook/goals';
 import useUser from '../customHook/user';
+import useWeeklyProgress from '../customHook/useWeeklyProgress';
 function ProfileHeader(): React.JSX.Element {
     const navigate = useNavigate();
     const { data: goals, isLoading } = useGoals();
     const { data: user } = useUser();
+    const {data: weeklyProgress} = useWeeklyProgress()
     const loginUser = user?.user || user || {};
 
 

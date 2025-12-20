@@ -8,11 +8,15 @@ import getCurrentWeekRange from "../../config/getWeekRange";
 import { stat } from "fs";
 import { get } from "http";
 
+// to calculate weekly progress bar 
+// i kinda wanna add up each users goal checkin history 
+// so if thye have 3 goals
+// it would be the percentage of x, x equals the number of checkin divided by 7 times the number of goals  
+
 
 let interactions = {
     getProfile: async (req:Request, res:Response) => {
         try {
-            // this is the login user (req as any).user.sub) code
             
             const getUser = await pool.query('SELECT * FROM users WHERE id = $1', [(req as any).user.sub]);
             res.json({ message: "Welcome back! " + getUser.rows[0].firstname, user: getUser.rows[0] });
@@ -172,23 +176,21 @@ let interactions = {
             const { goalname } = req.params;
 
             const goalData = await pool.query('SELECT * FROM goals WHERE userid = $1 and urlname = $2', [userId, goalname]);
+            const userData = await pool.query('SELECT * FROM users WHERE id = $1', [userId]);
+            const timeZone = userData.rows[0].time_zone;
             const totalcheckins = goalData.rows[0].totalcheckins + 1;
-            const longeststreak = goalData.rows[0].longeststreak;
-            if(goalData.rowCount === 0){
-                return res.status(404).send({status:"404", message:"Goal not found"});
+
+                if(goalData.rowCount === 0){
+                    return res.status(404).send({status:"404", message:"Goal not found"});
             }
 
             const goal = goalData.rows[0];
-            console.log(goal.lastcheckindate, 'goal last checkin date here')
 
-            // switch time zone form hard cided to what the user has stored in database
-            let lastCheckin: any = DateTime.fromJSDate(goal.lastcheckindate).setZone("America/Los_Angeles"); 
-            let today: any = DateTime.fromJSDate(new Date()).setZone("America/Los_Angeles").startOf("day");
+            let lastCheckin: any = DateTime.fromJSDate(goal.lastcheckindate).setZone(timeZone); 
+            let today: any = DateTime.fromJSDate(new Date()).setZone(timeZone).startOf("day");
 
             let diff = today.diff(lastCheckin, 'days').days ;
-            console.log(today, 'this is the today for goal checkin')
-            console.log(lastCheckin, 'last checkin date here for goal')
-            console.log(diff, 'this is the diff for goal checkin', 'i prolly need to fix this to help update the streaks correctly')
+
             if(diff !== null && diff <= 0){
                 return res.status(200).json({
                     updated: false,
@@ -210,10 +212,8 @@ let interactions = {
                     RETURNING *;
                 `;
                 const tagUpdate = today.toISODate();
-                console.log(tagUpdate, 'tag update here')
                 const newStreak = (diff !== null && diff === 1) ? goal.streak + 1 : 1;
                 const updateValues = [newStreak, `${tagUpdate} | Checked in — stayed consistent for this day`, totalcheckins, goal.id, `${new Date(Date.now()).toISOString()}`];
-                console.log(updateValues[4], 'update values here')
                 const result = await pool.query(updateQuery, updateValues);
 
                 
@@ -233,17 +233,20 @@ let interactions = {
     history: async (req: Request, res: Response) => {
         try {
             const userId = (req as any).user.sub;
+            const userData = await pool.query('SELECT * FROM users WHERE id = $1', [userId]);
+            const timeZone = userData.rows[0].time_zone;
+
             const {goalname} = req.params;
             const {text} = req.body;
-            let today: any = DateTime.fromJSDate(new Date()).setZone("America/Los_Angeles").startOf("day");
+            let today: any = DateTime.fromJSDate(new Date()).setZone(timeZone).startOf("day");
             today = today.toISO().slice(0,10);
             today = DateTime.fromISO(today);
             today = today.toISODate();
 
-            // const goalData = await pool.query('SELECT * FROM goals WHERE userid = $1 and goalname = $2', [userId, goalname]);
-            // if(goalData.rowCount === 0){
-            //     return res.status(404).send({status:"404", message:"Goal not found"});
-            // }
+            const goalData = await pool.query('SELECT * FROM goals WHERE userid = $1 and goalname = $2', [userId, goalname]);
+            if(goalData.rowCount === 0){
+                return res.status(404).send({status:"404", message:"Goal not found"});
+            }
 
             const updateQuery = `
                     UPDATE goals
@@ -252,7 +255,6 @@ let interactions = {
                     RETURNING *;
                 `;
 
-            //const goal = goalData.rows[0];
             const tagUpdate = `${today} | ${text}`;
             const updateValues = [userId, tagUpdate, goalname];
             const result = await pool.query(updateQuery, updateValues);
@@ -277,10 +279,8 @@ let interactions = {
                 return res.status(404).send({status:"404", message:"Goal not found"});
             }
             const goal = goalData.rows[0];
-            console.log(goal.tags);
             const tags = goal.tags.reverse() || [];
             res.status(200).json({tags: tags});
-            
         } catch (error) {
             console.log(error)
             res.status(500).send({error})
@@ -291,10 +291,13 @@ let interactions = {
         try {
             const userId = (req as any).user.sub;
             const { goalname } = req.params;
+            const userData = await pool.query('SELECT * FROM users WHERE id = $1', [userId]);
+            const timeZone = userData.rows[0].time_zone;
             const { start } = getCurrentWeekRange();
             let currentMonthArray: boolean[];
             const currentMonth = new Date(start).getMonth()+1
             const currentWeekArray: boolean[] = [false, false, false, false, false, false, false];
+
             if (currentMonth === 1 || currentMonth === 3 || currentMonth === 5 || currentMonth === 7 || currentMonth === 8 || currentMonth === 10 || currentMonth === 12){
                 currentMonthArray = new Array(31).fill(false);
             } else if (currentMonth === 4 || currentMonth === 6 || currentMonth === 9 || currentMonth === 11){
@@ -302,12 +305,9 @@ let interactions = {
             } else {
                 currentMonthArray = new Array(28).fill(false);
             }
-            
-            // if checkin date is in week range return one or true and if not return zero or false
-            // get the dates to be able to show the differnts in time passed. 
 
-            let theStartOfWeek: any = DateTime.fromJSDate(start.toJSDate(), { zone: "America/Los_Angeles" }).startOf("day");
-            
+            let theStartOfWeek: any = DateTime.fromJSDate(start.toJSDate(), { zone: timeZone }).startOf("day");
+
             const goalData = await pool.query('SELECT * FROM goals WHERE userid = $1 and urlname = $2', [userId, goalname]);
             if(goalData.rowCount === 0){
                 return res.status(404).send({status:"404", message:"Goal not found"});
@@ -321,19 +321,12 @@ let interactions = {
             }
 
             for(let i=0; i<checkInDates.length; i++){ {
-                console.log(checkInDates[i], 'checkin dates here')
-                let today: any = DateTime.fromJSDate(checkInDates[i], { zone: "America/Los_Angeles" }).startOf("day");
-                console.log(today.month === currentMonth, 'this is the month')
-                console.log(today.year === theStartOfWeek.year, 'this is the year')
+                let today: any = DateTime.fromJSDate(checkInDates[i], { zone: timeZone }).startOf("day");
                 if(today.month === currentMonth && today.year === theStartOfWeek.year){
-                    console.log(today.day, 'this is the day')
-                    console.log(today.day-1, 'this is the day - 1')
                     currentMonthArray[today.day-1] = true;
                 }
                 
                 let diff = theStartOfWeek ? today.diff(theStartOfWeek, 'days').days : null;
-                console.log(theStartOfWeek)
-                console.log(today)
                 if(diff !== null && diff >=0 && diff <=6){
                     currentWeekArray[diff] = true;
                 }
@@ -344,6 +337,27 @@ let interactions = {
             console.log(error)
             res.status(500).send({error})
         }
+    }, getWeeklyProgress: async (req:Request ,res:Response) => {
+        const userId = (req as any).user.sub;
+        const userGoals = await pool.query('SELECT * FROM goals WHERE userid = $1', [userId]);
+        const userData = await pool.query('SELECT * FROM users WHERE id = $1', [userId]);
+        const timeZone = userData.rows[0].time_zone;
+        const checkindata  = userGoals.rows.map((x:any) => x.checkindates);
+        const { start } = getCurrentWeekRange();
+        // make a varbile that send to forntend how many goals intoal the user has created.
+        const theStartOfWeek: any = DateTime.fromJSDate(start.toJSDate(), { zone: timeZone }).startOf("day");
+        let count = 0
+        
+        for(let i = 0; i<checkindata.length; i++){
+            for(let j = 0; j<checkindata[i].length; j++){
+                const today: any = DateTime.fromJSDate(checkindata[i][j], { zone: timeZone }).startOf("day");
+                let diff = theStartOfWeek ? today.diff(theStartOfWeek, 'days').days : null;
+                if(diff !== null && diff >=0 && diff <=6){
+                    count++
+                }
+            }
+        }
+        return count
     }
 }
 export default interactions
