@@ -25,10 +25,9 @@ function EditGoalComp({goal, refetch} : Props ) {
     if(data.status === "200"){
         alert(data.message);
         refetch();
-        //window.location.reload();
     }
   }
-  const handleEdit = async (e:any, ) => {
+  const handleEdit = async (e: React.FormEvent) => {
     e.preventDefault();
     const response = await fetch(`http://localhost:2050/goal/${goal.id}`, {
       method: 'PATCH',

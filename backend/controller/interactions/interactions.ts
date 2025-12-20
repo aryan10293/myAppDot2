@@ -189,8 +189,7 @@ let interactions = {
             console.log(today, 'this is the today for goal checkin')
             console.log(lastCheckin, 'last checkin date here for goal')
             console.log(diff, 'this is the diff for goal checkin', 'i prolly need to fix this to help update the streaks correctly')
-            if(false){
-                //diff !== null && diff <= 0
+            if(diff !== null && diff <= 0){
                 return res.status(200).json({
                     updated: false,
                     message: "Already checked in for this goal today.",

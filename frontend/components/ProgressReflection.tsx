@@ -10,10 +10,8 @@ function ProgressReflection(goalName: { goalName: string }) {
     const { data: checkins } = useCheckins(goalName.goalName || '');
     const {start, end} = getWeekRange();
     const g = goal?.goal || goal || {};
-    const checkinsData = checkins?.checkInDates ?? [];
     const weekProgress = checkins?.currentWeekArray ?? [];
     const monthProgress = checkins?.currentMonthArray ?? [];
-    console.log('Check-ins data:', weekProgress);
 
     const progressData = timeframe === 'week' ? weekProgress : monthProgress;
     const maxValue = Math.max(...progressData, 1);
@@ -51,7 +49,7 @@ function ProgressReflection(goalName: { goalName: string }) {
 
             {/* Bar chart */}
             <div className="flex items-end gap-2 h-40 justify-between">
-              {progressData.slice(0, timeframe === 'week' ? 7 : 30).map((value, i) => (
+              {progressData.slice(0, timeframe === 'week' ? 7 : 30).map((value: number, i:number) => (
                 <div key={i} className="flex flex-col items-center gap-2 flex-1 min-w-0">
                   <div className="w-full bg-gray-100 rounded-md overflow-hidden h-32 flex flex-col-reverse">
                     <div

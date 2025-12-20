@@ -42,7 +42,7 @@ export default function ViewGoal() {
   const g = goal?.goal || goal || {};
   const currentStreak = g.streak;
   const longestStreak = g?.longeststreak ?? 0;
-  const totalCompletions = g?.totalcheckins ?? 0;
+  const totalCompletions = g?.checkindates.length ?? 0;
 
  const lastCheckin = g?.lastcheckindate
   ? DateTime.fromISO(g.lastcheckindate)
@@ -50,7 +50,7 @@ export default function ViewGoal() {
       .toLocaleString(DateTime.DATE_MED)
   : "Never";
 
-  console.log('Last check-in date:', lastCheckin);
+
   const createdDate = g?.createddate ? new Date(g.createddate).toLocaleDateString() : 'Unknown';
 
 

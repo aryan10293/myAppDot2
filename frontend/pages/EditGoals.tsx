@@ -140,12 +140,16 @@ export default function EditGoals(): React.JSX.Element {
                     {showAll && goals.slice(3).map((g) => (
                         <EditGoalComp key={g.id} goal={g} refetch={refetch} />
                     ))}
-                      <div className="mt-3">
-                        <button
-                         className="px-4 py-2 bg-indigo-600 text-white rounded-md text-sm hover:bg-indigo-700"
-                        onClick={displayOfGoals}
-                         >{showAll ? "Show Less" : "Show All"}</button>
-                      </div>
+                      {goals.length > 3 && (
+                        <div className="mt-3">
+                          <button
+                            className="px-4 py-2 bg-indigo-600 text-white rounded-md text-sm hover:bg-indigo-700"
+                            onClick={displayOfGoals}
+                          >
+                              {showAll ? "Show Less" : "Show All"}
+                          </button>
+                        </div>
+                      )}
                 
                   </ul>
                 </div>
