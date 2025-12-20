@@ -182,13 +182,15 @@ let interactions = {
             console.log(goal.lastcheckindate, 'goal last checkin date here')
 
             // switch time zone form hard cided to what the user has stored in database
-            let lastCheckin: any = DateTime.fromJSDate(goal.lastcheckindate).setZone("America/Los_Angeles").startOf("day"); 
+            let lastCheckin: any = DateTime.fromJSDate(goal.lastcheckindate).setZone("America/Los_Angeles"); 
             let today: any = DateTime.fromJSDate(new Date()).setZone("America/Los_Angeles").startOf("day");
 
             let diff = today.diff(lastCheckin, 'days').days ;
-            console.log(today, 'this is the diff for goal checkin')
+            console.log(today, 'this is the today for goal checkin')
             console.log(lastCheckin, 'last checkin date here for goal')
-            if(diff !== null && diff <= 0){
+            console.log(diff, 'this is the diff for goal checkin', 'i prolly need to fix this to help update the streaks correctly')
+            if(false){
+                //diff !== null && diff <= 0
                 return res.status(200).json({
                     updated: false,
                     message: "Already checked in for this goal today.",
@@ -209,9 +211,10 @@ let interactions = {
                     RETURNING *;
                 `;
                 const tagUpdate = today.toISODate();
-                
+                console.log(tagUpdate, 'tag update here')
                 const newStreak = (diff !== null && diff === 1) ? goal.streak + 1 : 1;
-                const updateValues = [newStreak, `${tagUpdate} | Checked in — stayed consistent for this day`, totalcheckins, goal.id, `${tagUpdate}`];
+                const updateValues = [newStreak, `${tagUpdate} | Checked in — stayed consistent for this day`, totalcheckins, goal.id, `${new Date(Date.now()).toISOString()}`];
+                console.log(updateValues[4], 'update values here')
                 const result = await pool.query(updateQuery, updateValues);
 
                 
@@ -233,8 +236,7 @@ let interactions = {
             const userId = (req as any).user.sub;
             const {goalname} = req.params;
             const {text} = req.body;
-            console.log(goalname)
-            let today: any = DateTime.fromJSDate(new Date())
+            let today: any = DateTime.fromJSDate(new Date()).setZone("America/Los_Angeles").startOf("day");
             today = today.toISO().slice(0,10);
             today = DateTime.fromISO(today);
             today = today.toISODate();
@@ -320,8 +322,13 @@ let interactions = {
             }
 
             for(let i=0; i<checkInDates.length; i++){ {
+                console.log(checkInDates[i], 'checkin dates here')
                 let today: any = DateTime.fromJSDate(checkInDates[i], { zone: "America/Los_Angeles" }).startOf("day");
+                console.log(today.month === currentMonth, 'this is the month')
+                console.log(today.year === theStartOfWeek.year, 'this is the year')
                 if(today.month === currentMonth && today.year === theStartOfWeek.year){
+                    console.log(today.day, 'this is the day')
+                    console.log(today.day-1, 'this is the day - 1')
                     currentMonthArray[today.day-1] = true;
                 }
                 
