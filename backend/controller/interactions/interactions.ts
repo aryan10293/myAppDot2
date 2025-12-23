@@ -338,27 +338,38 @@ let interactions = {
             res.status(500).send({error})
         }
     }, getWeeklyProgress: async (req:Request ,res:Response) => {
-        const userId = (req as any).user.sub;
-        const userGoals = await pool.query('SELECT * FROM goals WHERE userid = $1', [userId]);
-        const userData = await pool.query('SELECT * FROM users WHERE id = $1', [userId]);
-        const timeZone = userData.rows[0].time_zone;
-        const checkindata  = userGoals.rows.map((x:any) => x.checkindates);
-        const { start } = getCurrentWeekRange();
-        // make a varbile that send to forntend how many goals intoal the user has created.
-        const theStartOfWeek: any = DateTime.fromJSDate(start.toJSDate(), { zone: timeZone }).startOf("day");
-        let count = 0
-        
-        for(let i = 0; i<checkindata.length; i++){
-            for(let j = 0; j<checkindata[i].length; j++){
-                const today: any = DateTime.fromJSDate(checkindata[i][j], { zone: timeZone }).startOf("day");
-                let diff = theStartOfWeek ? today.diff(theStartOfWeek, 'days').days : null;
-                if(diff !== null && diff >=0 && diff <=6){
-                    count++
+        try {
+            const userId = (req as any).user.sub;
+            const userGoals = await pool.query('SELECT * FROM goals WHERE userid = $1', [userId]);
+            const userData = await pool.query('SELECT * FROM users WHERE id = $1', [userId]);
+            const timeZone = userData.rows[0].time_zone;
+            const checkindata  = userGoals.rows.map((x:any) => x.checkindates);
+            const { start } = getCurrentWeekRange();
+            // make a varbile that send to forntend how many goals intoal the user has created.
+            const theStartOfWeek: any = DateTime.fromJSDate(start.toJSDate(), { zone: timeZone }).startOf("day");
+            let count = 0
+            
+            for(let i = 0; i<checkindata.length; i++){
+                for(let j = 0; j<checkindata[i].length; j++){
+                    const today: any = DateTime.fromJSDate(checkindata[i][j], { zone: timeZone }).startOf("day");
+                    let diff = theStartOfWeek ? today.diff(theStartOfWeek, 'days').days : null;
+                    if(diff !== null && diff >=0 && diff <=6){
+                        count++
+                    }
                 }
             }
+            const totalGoals = userGoals.rows.length * 7;
+            
+            const weeklyProgressPercentage = count / totalGoals;
+
+            res.status(200).json({ weeklyProgressPercentage: weeklyProgressPercentage})
+            
+        } catch (error) {
+            console.log(error)
+            res.status(500).send({error})
         }
-        return count
-    }
+
+    },
 }
 export default interactions
 

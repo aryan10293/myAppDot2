@@ -10,9 +10,17 @@ function ProfileHeader(): React.JSX.Element {
     const navigate = useNavigate();
     const { data: goals, isLoading } = useGoals();
     const { data: user } = useUser();
-    const {data: weeklyProgress} = useWeeklyProgress()
+    const {data: data, isLoading: weeklyProgressLoading} = useWeeklyProgress()
     const loginUser = user?.user || user || {};
 
+
+    if (!loginUser) {
+      return <span>Loading...</span>
+    }
+
+    if(weeklyProgressLoading) return <span>Loading...</span>;
+ 
+    const weeklyProgress = data?.weeklyProgressPercentage || 0 ;
 
   const { data:idk } = useQuery({
     queryKey: ['idk'],
@@ -27,7 +35,6 @@ function ProfileHeader(): React.JSX.Element {
       return  response.json()
     }
   })
-
 
 
     if (isLoading) {
@@ -65,7 +72,7 @@ function ProfileHeader(): React.JSX.Element {
 
                 <div className="mt-4 flex items-center gap-6">
                   <div className="flex items-center gap-4">
-                    <ProgressRing percent={Math.min(Math.max( .40), 1)} />
+                    <ProgressRing percent={Math.min(Math.max(weeklyProgress), 1)} />
                     <div className="text-sm text-gray-600">
                       <div className="font-medium text-gray-900">Weekly progress</div>
                       <div className="text-xs mt-1">Small wins stacked this week</div>
