@@ -369,7 +369,38 @@ let interactions = {
             res.status(500).send({error})
         }
 
-    },
-}
+    },trackWeeklyProgress: async (req:Request ,res:Response) =>{
+        // see if its the end of the week and if it is add the percentage of ones progress to a table in the database
+        // and then display the users goals of=ve the past 
+    },trackMonthProgress: async (req:Request ,res:Response) => {
+        // prolly just do the same thing as weekly progress for the goals but for the month
+
+    },getWeeklyProgressByGoal: async (req:Request ,res:Response) => {
+        // get the progress and acocountability of the the specfic goal and display
+        // the numbers to the user
+
+    }, getMonthlyProgressByGoal: async (req:Request ,res:Response) => {
+        // prolly just do the same thing as weekly progress for the goals but for the month
+    }, friends: async (req:Request ,res:Response) => {
+        // use this to add friends to able to see ones goal and thinngs of thatg nature if the goal is public
+    }, getFriends: async (req:Request ,res:Response) => {
+        // get all friends and display them to the user
+    }, addFriend: async (req:Request ,res:Response) => {
+        // add a friend to the user's friend list
+    }, removeFriend: async (req:Request ,res:Response) => {
+        // remove a friend from the user's friend list
+    }, getFriendGoals: async (req:Request ,res:Response) => {
+        // get all the goals of a friend and display them to the user
+    }, getFriendCheckIns: async (req:Request ,res:Response) => {
+        // get all the check-ins of a friend and display them to the user
+    }, getFriendProgress: async (req:Request ,res:Response) => {
+        // get the progress of a friend and display it to the user
+    }, getFriendMonthlyProgress: async (req:Request ,res:Response) => {
+        // get the monthly progress of
+        // idk if need all the specifally but know we are cooking
+    }, getFriendProfile: async (req:Request ,res:Response) => {
+        // get the visting page profile
+    }
+}   
 export default interactions
 

@@ -22,19 +22,7 @@ function ProfileHeader(): React.JSX.Element {
  
     const weeklyProgress = data?.weeklyProgressPercentage || 0 ;
 
-  const { data:idk } = useQuery({
-    queryKey: ['idk'],
-    queryFn: async () => {
-      const response = await fetch("http://localhost:2050/checkforcheckin", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-      });
-      return  response.json()
-    }
-  })
+
 
 
     if (isLoading) {
