@@ -5,8 +5,7 @@ import pool from "../../config/neon";
 import { DateTime } from "luxon";
 import {createGoal} from "../../model/createGoal";
 import getCurrentWeekRange from "../../config/getWeekRange";
-import { stat } from "fs";
-import { get } from "http";
+import convertUtcToTimeZone from "../../config/convertTimeZone";
 
 // to calculate weekly progress bar 
 // i kinda wanna add up each users goal checkin history 
@@ -161,6 +160,9 @@ let interactions = {
             const userId = (req as any).user.sub;
             const { goalname } = req.params;
             const data = await pool.query('SELECT * FROM goals WHERE userid = $1 and urlname = $2', [userId, goalname]);
+
+            const lastCheckinDisplay = convertUtcToTimeZone(data.rows[0].lastcheckindate, data.rows[0].time_zone);
+            console.log(lastCheckinDisplay);
             if(data.rowCount === 0){
                 return res.status(404).send({status:"404", message:"Goal not found"});
             }
@@ -243,7 +245,7 @@ let interactions = {
             today = DateTime.fromISO(today);
             today = today.toISODate();
 
-            const goalData = await pool.query('SELECT * FROM goals WHERE userid = $1 and goalname = $2', [userId, goalname]);
+            const goalData = await pool.query('SELECT * FROM goals WHERE userid = $1 and urlname = $2', [userId, goalname]);
             if(goalData.rowCount === 0){
                 return res.status(404).send({status:"404", message:"Goal not found"});
             }
@@ -296,6 +298,7 @@ let interactions = {
             const { start } = getCurrentWeekRange();
             let currentMonthArray: boolean[];
             const currentMonth = new Date(start).getMonth()+1
+           
             const currentWeekArray: boolean[] = [false, false, false, false, false, false, false];
 
             if (currentMonth === 1 || currentMonth === 3 || currentMonth === 5 || currentMonth === 7 || currentMonth === 8 || currentMonth === 10 || currentMonth === 12){
@@ -332,6 +335,7 @@ let interactions = {
                 }
 
             } };
+            console.log(checkInDates);
             res.status(200).json({ checkInDates, currentWeekArray, currentMonthArray });
         } catch (error) {
             console.log(error)

@@ -44,12 +44,13 @@ export default function ViewGoal() {
   const longestStreak = g?.longeststreak ?? 0;
   const totalCompletions = g?.checkindates.length ?? 0;
 
- const lastCheckin = g?.lastcheckindate
-  ? DateTime.fromISO(g.lastcheckindate)
-      .setZone("America/Los_Angeles")
-      .toLocaleString(DateTime.DATE_MED)
-  : "Never";
+ const lastCheckin = DateTime.fromISO(g.lastcheckindate, { zone: "utc" })
+  .setZone("America/Los_Angeles")
+  .toLocaleString(DateTime.DATE_MED)
 
+  console.log(lastCheckin);
+
+  
 
   const createdDate = g?.createddate ? new Date(g.createddate).toLocaleDateString() : 'Unknown';
 
