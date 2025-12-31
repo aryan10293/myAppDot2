@@ -5,7 +5,6 @@ import pool from "../../config/neon";
 import { DateTime } from "luxon";
 import {createGoal} from "../../model/createGoal";
 import getCurrentWeekRange from "../../config/getWeekRange";
-import convertUtcToTimeZone from "../../config/convertTimeZone";
 
 // to calculate weekly progress bar 
 // i kinda wanna add up each users goal checkin history 
@@ -161,8 +160,7 @@ let interactions = {
             const { goalname } = req.params;
             const data = await pool.query('SELECT * FROM goals WHERE userid = $1 and urlname = $2', [userId, goalname]);
 
-            const lastCheckinDisplay = convertUtcToTimeZone(data.rows[0].lastcheckindate, data.rows[0].time_zone);
-            console.log(lastCheckinDisplay);
+
             if(data.rowCount === 0){
                 return res.status(404).send({status:"404", message:"Goal not found"});
             }
@@ -249,7 +247,7 @@ let interactions = {
             if(goalData.rowCount === 0){
                 return res.status(404).send({status:"404", message:"Goal not found"});
             }
-
+// 2025-12-23 02:09:01.605215
             const updateQuery = `
                     UPDATE goals
                     SET tags = array_append(tags, $2)

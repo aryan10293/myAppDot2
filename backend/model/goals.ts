@@ -1,5 +1,5 @@
 import pool from "../config/neon";
-
+import getDate from "../config/getDate";
 const createGoalTable = async () => {
     try {
         await pool.query(`
@@ -18,7 +18,7 @@ const createGoalTable = async () => {
                 totalcheckins INTEGER NOT NULL DEFAULT 1,
                 privacy VARCHAR(255) NOT NULL,
                 lastcheckindate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                createdDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                createdDate VARCHAR(255) NOT NULL DEFAULT '${getDate()}'
             );
         `);
     } catch (error) {
