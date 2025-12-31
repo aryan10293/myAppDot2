@@ -7,7 +7,8 @@ import useOneGoal from '../customHook/getOneGoal';
 import History from '../components/History';
 import useTags from '../customHook/useTags';
 import useCheckins from '../customHook/useCheckins';
-import { DateTime } from "luxon";
+import formDate from '../components/formDate';
+
 
 
 
@@ -43,12 +44,12 @@ export default function ViewGoal() {
   const currentStreak = g.streak;
   const longestStreak = g?.longeststreak ?? 0;
   const totalCompletions = g?.checkindates.length ?? 0;
+  const lastCheckin = formDate(g.lastcheckindate); 
 
- const lastCheckin = DateTime.fromISO(g.lastcheckindate, { zone: "utc" })
-  .setZone("America/Los_Angeles")
-  .toLocaleString(DateTime.DATE_MED)
 
-  console.log(lastCheckin);
+ console.log(g?.checkindates)
+ console.log(formDate(g.lastcheckindate))
+
 
   
 
