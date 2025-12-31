@@ -1,5 +1,6 @@
 import pool from "../config/neon";
 import { v4 as uuidv4 } from "uuid";
+import getDate from "../config/getDate";
 
 // password will end being hashed in the future
 export async function createGoal(userId:string, goalName:string, minutes:number,  privacy: string, description?: string, frequency?: string) {
@@ -11,7 +12,7 @@ export async function createGoal(userId:string, goalName:string, minutes:number,
     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
     RETURNING *;
   `;
-  const values = [id, userId, goalName, privacy, minutes, description, frequency, goalName.split(' ').filter((c:string) => c !== ' ').join(''), [new Date(Date.now()).toISOString()]];
+  const values = [id, userId, goalName, privacy, minutes, description, frequency, goalName.split(' ').filter((c:string) => c !== ' ').join(''), [getDate()]];
   const result = await pool.query(query, values);
   return result.rows[0];
 }

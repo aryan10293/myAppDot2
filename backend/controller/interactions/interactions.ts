@@ -116,6 +116,7 @@ let interactions = {
         const userId = (req as any).user.sub;
         const {title, privacy, minutes, description, frequency} = req.body
         const user = await createGoal(userId, title, minutes, privacy, description, frequency );
+        // send the date here in a array
         res.status(201).send({status:"201", message:"goal was entered succesfully"})
     },
     deleteGoal: async (req: Request, res: Response) => {

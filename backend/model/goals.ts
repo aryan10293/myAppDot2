@@ -12,13 +12,13 @@ const createGoalTable = async () => {
                 frequency VARCHAR(255),
                 streak INTEGER NOT NULL DEFAULT 1,
                 tags TEXT[] DEFAULT '{}',
-                checkindates TIMESTAMPTZ[] DEFAULT '{}',
+                checkindates VARCHAR(255)[] NOT NULL,
                 minutes INTEGER NOT NULL DEFAULT 1,
                 longeststreak INTEGER NOT NULL DEFAULT 1,
                 totalcheckins INTEGER NOT NULL DEFAULT 1,
                 privacy VARCHAR(255) NOT NULL,
-                lastcheckindate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                createdDate VARCHAR(255) NOT NULL DEFAULT '${getDate()}'
+                lastcheckindate VARCHAR(255) DEFAULT '${getDate()}',
+                createdDate VARCHAR(255) DEFAULT '${getDate()}'
             );
         `);
     } catch (error) {
