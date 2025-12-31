@@ -46,14 +46,7 @@ export default function ViewGoal() {
   const totalCompletions = g?.checkindates.length ?? 0;
   const lastCheckin = formDate(g.lastcheckindate); 
 
-
- console.log(g?.checkindates)
- console.log(formDate(g.lastcheckindate))
-
-
-  
-
-  const createdDate = g?.createddate ? new Date(g.createddate).toLocaleDateString() : 'Unknown';
+  const createdDate = formDate(g?.createddate);
 
 
   return (

@@ -5,11 +5,8 @@ import pool from "../../config/neon";
 import { DateTime } from "luxon";
 import {createGoal} from "../../model/createGoal";
 import getCurrentWeekRange from "../../config/getWeekRange";
-
-// to calculate weekly progress bar 
-// i kinda wanna add up each users goal checkin history 
-// so if thye have 3 goals
-// it would be the percentage of x, x equals the number of checkin divided by 7 times the number of goals  
+import getDate from "../../config/getDate";
+import diffBetweenDays from "../../config/diffBetweenDays";
 
 
 let interactions = {
@@ -178,6 +175,9 @@ let interactions = {
 
             const goalData = await pool.query('SELECT * FROM goals WHERE userid = $1 and urlname = $2', [userId, goalname]);
             const userData = await pool.query('SELECT * FROM users WHERE id = $1', [userId]);
+            
+
+            // the stuff below might get deleted later
             const timeZone = userData.rows[0].time_zone;
             const totalcheckins = goalData.rows[0].totalcheckins + 1;
 
@@ -186,11 +186,10 @@ let interactions = {
             }
 
             const goal = goalData.rows[0];
+            // i dont understand the puurpose of DT yet but ill leave it here for now
+            // const dt = DateTime.fromFormat(goal.lastcheckindate, "yyyy-MM-dd");
 
-            let lastCheckin: any = DateTime.fromJSDate(goal.lastcheckindate).setZone(timeZone); 
-            let today: any = DateTime.fromJSDate(new Date()).setZone(timeZone).startOf("day");
-
-            let diff = today.diff(lastCheckin, 'days').days ;
+            const diff = diffBetweenDays(goal.lastcheckindate, getDate());
 
             if(diff !== null && diff <= 0){
                 return res.status(200).json({
@@ -208,13 +207,13 @@ let interactions = {
                             WHEN $1 > longeststreak THEN $1 
                             ELSE longeststreak 
                         END,
-                        lastcheckindate = NOW()
+                        lastcheckindate = $5
                     WHERE id = $4
                     RETURNING *;
                 `;
                 const tagUpdate = today.toISODate();
                 const newStreak = (diff !== null && diff === 1) ? goal.streak + 1 : 1;
-                const updateValues = [newStreak, `${tagUpdate} | Checked in — stayed consistent for this day`, totalcheckins, goal.id, `${new Date(Date.now()).toISOString()}`];
+                const updateValues = [newStreak, `${tagUpdate} | Checked in — stayed consistent for this day`, totalcheckins, goal.id, getDate()];
                 const result = await pool.query(updateQuery, updateValues);
 
                 
