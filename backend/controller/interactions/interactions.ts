@@ -353,19 +353,20 @@ let interactions = {
         try {
             const userId = (req as any).user.sub;
             const userGoals = await pool.query('SELECT * FROM goals WHERE userid = $1', [userId]);
-            const userData = await pool.query('SELECT * FROM users WHERE id = $1', [userId]);
-            const timeZone = userData.rows[0].time_zone;
             const checkindata  = userGoals.rows.map((x:any) => x.checkindates);
             const { start } = getCurrentWeekRange();
-            // make a varbile that send to forntend how many goals intoal the user has created.
+ 
             
-            const theStartOfWeek: any = DateTime.fromJSDate(start.toJSDate(), { zone: timeZone }).startOf("day");
+            const theStartOfWeek: any = DateTime.fromJSDate(start.toJSDate());
+            const virgil = theStartOfWeek.month;
+            const imSlow = theStartOfWeek.day;
+            const lmao = theStartOfWeek.year;
+            const newStartOfWeek = `${theStartOfWeek.year}-${theStartOfWeek.month.toString().padStart(2, '0')}-${theStartOfWeek.day.toString().padStart(2, '0')}`;
             let count = 0
             
             for(let i = 0; i<checkindata.length; i++){
                 for(let j = 0; j<checkindata[i].length; j++){
-                    const today: any = DateTime.fromJSDate(checkindata[i][j], { zone: timeZone }).startOf("day");
-                    let diff = theStartOfWeek ? today.diff(theStartOfWeek, 'days').days : null;
+                    let diff = diffBetweenDays(newStartOfWeek, checkindata[i][j]);
                     if(diff !== null && diff >=0 && diff <=6){
                         count++
                     }
