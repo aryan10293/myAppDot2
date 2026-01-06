@@ -35,6 +35,10 @@ export default function ViewGoal() {
       refetch();
       refetchTags();
       refetchCheckins();
+    } else if (data.status === '400') {
+      alert('You have already checked in today.');
+    } else {
+      alert('An error occurred during check-in.');
     }
   };
 

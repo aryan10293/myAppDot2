@@ -191,9 +191,10 @@ let interactions = {
             const diff = diffBetweenDays(goal.lastcheckindate, getDate());
 
             if(diff !== null && diff <= 0){
-                return res.status(200).json({
+                return res.status(400).json({
                     updated: false,
                     message: "Already checked in for this goal today.",
+                     status: "400",
                 });
             } else {
                 const updateQuery = `
@@ -290,8 +291,6 @@ let interactions = {
         try {
             const userId = (req as any).user.sub;
             const { goalname } = req.params;
-            const userData = await pool.query('SELECT * FROM users WHERE id = $1', [userId]);
-            const timeZone = userData.rows[0].time_zone;
             const { start } = getCurrentWeekRange();
             let currentMonthArray: boolean[];
             const currentMonth = new Date().getMonth()+1
@@ -338,13 +337,13 @@ let interactions = {
                 const lmao = theStartOfWeek.year;
                 const newStartOfWeek = `${theStartOfWeek.year}-${theStartOfWeek.month.toString().padStart(2, '0')}-${theStartOfWeek.day.toString().padStart(2, '0')}`;
 
-                const diff = diffBetweenDays(newStartOfWeek, getDate())
+                const diff = diffBetweenDays(newStartOfWeek, checkInDates[i]);
+
                 if( diff >=0 && diff <=6){
                     currentWeekArray[diff] = true;
                 }
 
             } };
-            console.log(checkInDates);
             res.status(200).json({ checkInDates, currentWeekArray, currentMonthArray });
         } catch (error) {
             console.log(error)
