@@ -7,6 +7,7 @@ import {createGoal} from "../../model/createGoal";
 import getCurrentWeekRange from "../../config/getWeekRange";
 import getDate from "../../config/getDate";
 import diffBetweenDays from "../../config/diffBetweenDays";
+import { get } from "http";
 
 
 let interactions = {
@@ -186,8 +187,6 @@ let interactions = {
             }
 
             const goal = goalData.rows[0];
-            // i dont understand the puurpose of DT yet but ill leave it here for now
-            // const dt = DateTime.fromFormat(goal.lastcheckindate, "yyyy-MM-dd");
 
             const diff = diffBetweenDays(goal.lastcheckindate, getDate());
 
@@ -211,9 +210,9 @@ let interactions = {
                     WHERE id = $4
                     RETURNING *;
                 `;
-                const tagUpdate = today.toISODate();
+
                 const newStreak = (diff !== null && diff === 1) ? goal.streak + 1 : 1;
-                const updateValues = [newStreak, `${tagUpdate} | Checked in — stayed consistent for this day`, totalcheckins, goal.id, getDate()];
+                const updateValues = [newStreak, `${getDate()} | Checked in — stayed consistent for this day`, totalcheckins, goal.id, getDate()];
                 const result = await pool.query(updateQuery, updateValues);
 
                 
@@ -295,9 +294,9 @@ let interactions = {
             const timeZone = userData.rows[0].time_zone;
             const { start } = getCurrentWeekRange();
             let currentMonthArray: boolean[];
-            const currentMonth = new Date(start).getMonth()+1
-           
-            const currentWeekArray: boolean[] = [false, false, false, false, false, false, false];
+            const currentMonth = new Date().getMonth()+1
+            const currentWeekArray: boolean[] = new Array(7).fill(false);
+            let theStartOfWeek: any = DateTime.fromJSDate(start.toJSDate())
 
             if (currentMonth === 1 || currentMonth === 3 || currentMonth === 5 || currentMonth === 7 || currentMonth === 8 || currentMonth === 10 || currentMonth === 12){
                 currentMonthArray = new Array(31).fill(false);
@@ -307,7 +306,7 @@ let interactions = {
                 currentMonthArray = new Array(28).fill(false);
             }
 
-            let theStartOfWeek: any = DateTime.fromJSDate(start.toJSDate(), { zone: timeZone }).startOf("day");
+            
 
             const goalData = await pool.query('SELECT * FROM goals WHERE userid = $1 and urlname = $2', [userId, goalname]);
             if(goalData.rowCount === 0){
@@ -317,18 +316,30 @@ let interactions = {
             const goal = goalData.rows[0];
             const checkInDates = goal.checkindates || [];
 
+            
+
             if( checkInDates.length === 0){
                 return  res.status(200).json({ checkInDates: [], currentWeekArray, currentMonthArray });
             }
 
             for(let i=0; i<checkInDates.length; i++){ {
-                let today: any = DateTime.fromJSDate(checkInDates[i], { zone: timeZone }).startOf("day");
-                if(today.month === currentMonth && today.year === theStartOfWeek.year){
-                    currentMonthArray[today.day-1] = true;
+                let today: any = getDate();
+                let month = parseInt(today.split('-')[1]);
+                let year = parseInt(today.split('-')[0]);
+                let day = parseInt(today.split('-')[2]);
+
+                if(month === currentMonth && year === theStartOfWeek.year){
+                    console.log('entered month condition')
+                    currentMonthArray[day-1] = true;
                 }
-                
-                let diff = theStartOfWeek ? today.diff(theStartOfWeek, 'days').days : null;
-                if(diff !== null && diff >=0 && diff <=6){
+
+                const virgil = theStartOfWeek.month;
+                const imSlow = theStartOfWeek.day;
+                const lmao = theStartOfWeek.year;
+                const newStartOfWeek = `${theStartOfWeek.year}-${theStartOfWeek.month.toString().padStart(2, '0')}-${theStartOfWeek.day.toString().padStart(2, '0')}`;
+
+                const diff = diffBetweenDays(newStartOfWeek, getDate())
+                if( diff >=0 && diff <=6){
                     currentWeekArray[diff] = true;
                 }
 
@@ -348,6 +359,7 @@ let interactions = {
             const checkindata  = userGoals.rows.map((x:any) => x.checkindates);
             const { start } = getCurrentWeekRange();
             // make a varbile that send to forntend how many goals intoal the user has created.
+            
             const theStartOfWeek: any = DateTime.fromJSDate(start.toJSDate(), { zone: timeZone }).startOf("day");
             let count = 0
             
