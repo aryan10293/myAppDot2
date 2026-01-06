@@ -22,14 +22,13 @@ const buddies = [
 
 export default function Profile(): React.JSX.Element {
   const navigate = useNavigate();
-  const [update, setUpdate] = useState<boolean>(false);
-  const [count, setCount] = useState<boolean>(false);
   const { data: user, isLoading, refetch } = useUser();
 
 
-
+  if(isLoading){
+    console.log(user.streak, 'this is the user data in profile page')
+  }
   const checkIn = async () => {
-    console.log("checkin")
     const response = await fetch("http://localhost:2050/checkin", {
       method: "PATCH",
       headers: {
@@ -39,10 +38,13 @@ export default function Profile(): React.JSX.Element {
     })
     const result = await response.json();
     // refecth user data to update streak
-    refetch()
-    setUpdate(result.updated);
-    setCount(true);
-    console.log(result)
+    if( result.status === "200"){
+      alert(result.message);
+      refetch()
+    } else {
+      alert(result.message);
+      console.log(result)
+    }
   } 
 
   if (isLoading) return <Loading overlay message="Loading profile..." />;
@@ -77,7 +79,7 @@ export default function Profile(): React.JSX.Element {
           {/* Left column: main profile + stats (spans 2 cols on lg) */}
           <div className="lg:col-span-2 space-y-6">
             {/*will be profile data here im jsut making it into a component  */}
-            <ProfileHeader user={user.user} update={update} />
+            <ProfileHeader user={user.user} number={user.streak} />
 
             {/* Proof vault & reflections */}
             

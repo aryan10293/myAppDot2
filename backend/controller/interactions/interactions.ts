@@ -35,27 +35,29 @@ let interactions = {
 
             if (!user) return res.status(404).json({ message: "User not found" });
 
-            let checkin = DateTime.fromJSDate(user.last_checkin, { zone: user.time_zone }).startOf("day");
-            let today  = DateTime.now().setZone(user.time_zone).startOf("day");
+            let checkin = user.last_checkin;
+            console.log(checkin, 'this is the last checkin date')
+            let today = getDate();
 
-            const diff = today.diff(checkin, 'days').days
-            console.log(diff, 'this is the diff')
+            const diff = diffBetweenDays('2026-01-01', today)
+            console.log(diff<=0, 'this is the diff value')
             const updateQuery = `
                 UPDATE users
                 SET streak = $1,
-                    last_checkin = NOW()
+                    last_checkin = $3
                 WHERE id = $2
                 RETURNING *;    
             `;
 
             if(diff <= 0){
-                return res.status(200).json({
+                return res.status(400).json({
                     updated: false,
                     message: "Already checked in today.",
                     streak: user.streak,
+                    status: "400",
                 });
             } else {
-                const updateValues = [user.streak + 1, user.id];
+                const updateValues = [user.streak + 1, user.id, today];
                 const result = await pool.query(updateQuery, updateValues);
 
                 

@@ -6,12 +6,13 @@ import { useQuery } from "@tanstack/react-query";
 import useGoals from '../customHook/goals';
 import useUser from '../customHook/user';
 import useWeeklyProgress from '../customHook/useWeeklyProgress';
-function ProfileHeader(): React.JSX.Element {
+function ProfileHeader({number}): React.JSX.Element {
     const navigate = useNavigate();
     const { data: goals, isLoading } = useGoals();
     const { data: user } = useUser();
     const {data: data, isLoading: weeklyProgressLoading} = useWeeklyProgress()
     const loginUser = user?.user || user || {};
+    const streak = number || 0;
 
 
     if (!loginUser) {
@@ -54,7 +55,7 @@ function ProfileHeader(): React.JSX.Element {
 
                   <div className="flex gap-3">
                             {/* add soemthing in database that keep track fo streak */}
-                    <StatCard label="Current streak" value={loginUser.streak} />
+                    <StatCard label="Current streak" value={streak} />
                   </div>
                 </div>
 
