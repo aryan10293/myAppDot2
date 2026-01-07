@@ -8,7 +8,7 @@ import Notes from "../components/Notes";
 import SmallCard from "../components/SmallCard";
 import Achievements from "../components/Achievements";
 import AccountInfo from "../components/AccountInfo";
-import { Link } from "react-router-dom";
+import { useEffect } from "react";
 
 const buddies = [
   { id: "b1", name: "Alice", avatarUrl: null },
@@ -23,11 +23,15 @@ const buddies = [
 export default function Profile(): React.JSX.Element {
   const navigate = useNavigate();
   const { data: user, isLoading, refetch } = useUser();
+  const [streak, setStreak] = useState<number>(user?.user.streak);
+
+  useEffect(() => {
+    if (user?.user?.streak !== undefined) {
+      setStreak(user.user.streak);
+    }
+  }, [user]);
 
 
-  if(isLoading){
-    console.log(user.streak, 'this is the user data in profile page')
-  }
   const checkIn = async () => {
     const response = await fetch("http://localhost:2050/checkin", {
       method: "PATCH",
@@ -40,6 +44,7 @@ export default function Profile(): React.JSX.Element {
     // refecth user data to update streak
     if( result.status === "200"){
       alert(result.message);
+      setStreak(streak + 1);
       refetch()
     } else {
       alert(result.message);
@@ -79,7 +84,7 @@ export default function Profile(): React.JSX.Element {
           {/* Left column: main profile + stats (spans 2 cols on lg) */}
           <div className="lg:col-span-2 space-y-6">
             {/*will be profile data here im jsut making it into a component  */}
-            <ProfileHeader user={user.user} number={user.streak} />
+            <ProfileHeader streak={streak} />
 
             {/* Proof vault & reflections */}
             

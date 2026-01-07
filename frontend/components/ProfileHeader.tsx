@@ -2,22 +2,22 @@ import React, {  } from 'react'
 import StatCard from './StatCard';
 import { useNavigate } from "react-router-dom";
 import ProgressRing from './ProgressRing';
-import { useQuery } from "@tanstack/react-query";
+
 import useGoals from '../customHook/goals';
 import useUser from '../customHook/user';
 import useWeeklyProgress from '../customHook/useWeeklyProgress';
-function ProfileHeader({number}): React.JSX.Element {
+function ProfileHeader(props): React.JSX.Element {
     const navigate = useNavigate();
     const { data: goals, isLoading } = useGoals();
     const { data: user } = useUser();
     const {data: data, isLoading: weeklyProgressLoading} = useWeeklyProgress()
     const loginUser = user?.user || user || {};
-    const streak = number || 0;
-
 
     if (!loginUser) {
       return <span>Loading...</span>
     }
+    console.log(props)
+    console.log(props.streak, "from profile header")
 
     if(weeklyProgressLoading) return <span>Loading...</span>;
  
@@ -55,7 +55,7 @@ function ProfileHeader({number}): React.JSX.Element {
 
                   <div className="flex gap-3">
                             {/* add soemthing in database that keep track fo streak */}
-                    <StatCard label="Current streak" value={streak} />
+                    <StatCard label="Current streak" value={props.streak} />
                   </div>
                 </div>
 

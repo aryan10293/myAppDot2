@@ -39,8 +39,8 @@ let interactions = {
             console.log(checkin, 'this is the last checkin date')
             let today = getDate();
 
-            const diff = diffBetweenDays('2026-01-01', today)
-            console.log(diff<=0, 'this is the diff value')
+            const diff = diffBetweenDays( checkin, today)
+
             const updateQuery = `
                 UPDATE users
                 SET streak = $1,
@@ -62,6 +62,7 @@ let interactions = {
 
                 
                 return res.status(200).json({
+                status: "200",
                 updated: true,
                 message: "Check-in successful.",
                 ...result.rows[0],
@@ -325,12 +326,15 @@ let interactions = {
 
             for(let i=0; i<checkInDates.length; i++){ {
                 let today: any = getDate();
-                let month = parseInt(today.split('-')[1]);
-                let year = parseInt(today.split('-')[0]);
-                let day = parseInt(today.split('-')[2]);
+                
+                let month = parseInt(checkInDates[i].split('-')[1]);
+                let year = parseInt(checkInDates[i].split('-')[0]);
+                let day = parseInt(checkInDates[i].split('-')[2]);
 
                 if(month === currentMonth && year === theStartOfWeek.year){
                     console.log('entered month condition')
+                    console.log(checkInDates[i], 'this is today date')
+                    console.log(day, "this is the day")
                     currentMonthArray[day-1] = true;
                 }
 
