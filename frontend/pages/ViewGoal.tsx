@@ -72,6 +72,12 @@ export default function ViewGoal() {
             >
               ← Back to profile
             </button>
+            <button
+              onClick={() => navigate('/trackprogress/' + g.urlname)}
+              className="text-indigo-600 hover:underline text-sm text-left"
+            >
+              ← View Progress
+            </button>
           </div>
 
           <div className="flex gap-3">

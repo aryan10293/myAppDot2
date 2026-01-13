@@ -5,7 +5,7 @@ import Profile from '../pages/Profile'
 import SignUp from '../pages/SignUp'
 import EditGoals from '../pages/EditGoals'
 import ViewGoal from '../pages/ViewGoal'
-
+import TrackProgress from '../pages/TrackProgress'
 
 function App() {
 
@@ -19,6 +19,8 @@ function App() {
           <Route path="/profile"element={<Profile /> } />
           <Route path="/editgoals"element={<EditGoals /> } />
           <Route path="/goal/:goalname" element={<ViewGoal />} />
+          <Route path="/trackprogress/:goalname" element={<TrackProgress />} />
+
           {/* <PrivateRoute> */}
           {/* <Route path="/dashboard" element={<Dashboard />} />    */}
           {/* </PrivateRoute> */}

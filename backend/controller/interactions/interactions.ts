@@ -250,7 +250,7 @@ let interactions = {
             if(goalData.rowCount === 0){
                 return res.status(404).send({status:"404", message:"Goal not found"});
             }
-// 2025-12-23 02:09:01.605215
+
             const updateQuery = `
                     UPDATE goals
                     SET tags = array_append(tags, $2)
@@ -378,9 +378,37 @@ let interactions = {
                     }
                 }
             }
+
+
+            // we want code here eveything else is fine
+
+
+
+            const updateQuery = `
+                    UPDATE goals
+                    SET weeklydatastats = $2
+                    WHERE urlname = $3 AND userid = $1
+                    RETURNING *;
+            `;
+
+            // fix the update query to update the weekly data stats
+            // 
+
+            // const updateValues = [userId, weeklyProgressPercentage, goalname];
+            // const result = await pool.query(updateQuery, updateValues);
+            // Save weekly progress data to the database
+
+
+
             const totalGoals = userGoals.rows.length * 7;
             
             const weeklyProgressPercentage = count / totalGoals;
+
+
+            console.log("Week of:", newStartOfWeek);
+            console.log(userGoals.rows[0].weeklydatastats, "Total Goals");
+
+            // i need to save this weekly data in the backend 
 
             res.status(200).json({ weeklyProgressPercentage: weeklyProgressPercentage})
             
@@ -392,55 +420,16 @@ let interactions = {
     },trackWeeklyProgress: async (req:Request ,res:Response) =>{
         try {
             const userId = (req as any).user.sub;
-
-            const userRes = await pool.query('SELECT time_zone FROM users WHERE id = $1', [userId]);
-            if (userRes.rowCount === 0) return res.status(404).json({ message: 'User not found' });
-            const timeZone = userRes.rows[0].time_zone || 'UTC';
-
-            const now = DateTime.now().setZone(timeZone);
-            // Only run on Saturday(6) or Sunday(7) mornings (before 12:00)
-            if (!(now.weekday === 6 || now.weekday === 7) || now.hour >= 12) {
-                // maybe we can keep a updated list of the percentage and update it as we go cause only runnign this once wont work
-                return res.status(400).json({ message: 'This endpoint runs only on Saturday or Sunday mornings.' });
-            }
-
-            const { start } = getCurrentWeekRange();
-            const theStartOfWeek: any = DateTime.fromJSDate(start.toJSDate()).setZone(timeZone).startOf('day');
-            const weekStartISO = theStartOfWeek.toISODate();
-
-            // compute weekly progress (similar logic to getWeeklyProgress)
             const userGoals = await pool.query('SELECT * FROM goals WHERE userid = $1', [userId]);
-            const checkindata = userGoals.rows.map((x: any) => x.checkindates || []);
-            let count = 0;
-            for (let i = 0; i < checkindata.length; i++) {
-                for (let j = 0; j < checkindata[i].length; j++) {
-                    const diff = diffBetweenDays(weekStartISO, checkindata[i][j]);
-                    if (diff !== null && diff >= 0 && diff <= 6) {
-                        count++;
-                    }
-                }
-            }
 
-            const totalGoals = userGoals.rows.length * 7;
-            const weeklyProgressPercentage = totalGoals === 0 ? 0 : count / totalGoals;
+            console.log(userGoals.rows, "ertybguhinjmokjinhubgyvftgbuhinjhbugvyf")
+            res.status(200).json({ weeklyProgressPercentage: 'this does work'})
 
-            // ensure storage table exists and insert record for this week if not already present
-            await pool.query(`CREATE TABLE IF NOT EXISTS weekly_progress (
-                id bigserial PRIMARY KEY,
-                userid uuid,
-                week_of date,
-                percentage double precision,
-                created_at timestamptz DEFAULT now()
-            );`);
 
-            const exists = await pool.query('SELECT 1 FROM weekly_progress WHERE userid = $1 AND week_of = $2', [userId, weekStartISO]);
-            if (exists.rowCount > 0) {
-                return res.status(200).json({ status: '200', message: 'Weekly progress already recorded for this week.', weeklyProgressPercentage });
-            }
 
-            const insert = await pool.query('INSERT INTO weekly_progress (userid, week_of, percentage) VALUES ($1, $2, $3) RETURNING *', [userId, weekStartISO, weeklyProgressPercentage]);
+            
 
-            return res.status(201).json({ status: '201', message: 'Weekly progress recorded.', weekly: insert.rows[0] });
+        
 
         } catch (error) {
             console.error(error);

@@ -9,7 +9,9 @@ router.get("/goal", requireAuth, interactions.getGoals);
 router.get("/goal/:goalname", requireAuth, interactions.getGoalByName);
 router.get("/tags/:goalname", requireAuth, interactions.getTags);
 router.get("/checkins/:goalname", requireAuth, interactions.getCheckInDates);
-router.get('/weeklyprogress', requireAuth, interactions.getWeeklyProgress);
+
+router.patch('/weeklyprogress', requireAuth, interactions.getWeeklyProgress);
+
 
 router.post("/register", main.register);
 router.post("/login", main.login);
@@ -22,6 +24,7 @@ router.patch("/checkforcheckin", requireAuth, interactions.checkForCheckIn);
 router.patch("/goal/:id", requireAuth, interactions.editGoal);
 router.patch("/checkin/:goalname", requireAuth, interactions.goalCheckIn);
 router.patch("/history/:goalname", requireAuth, interactions.history);
+router.patch('/trackweeklyprogress/:goalname', requireAuth, interactions.trackWeeklyProgress);
 
 router.delete("/goal/:goalname", requireAuth, interactions.deleteGoal);
 
