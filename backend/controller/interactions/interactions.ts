@@ -36,7 +36,6 @@ let interactions = {
             if (!user) return res.status(404).json({ message: "User not found" });
 
             let checkin = user.last_checkin;
-            console.log(checkin, 'this is the last checkin date')
             let today = getDate();
 
             const diff = diffBetweenDays( checkin, today)
@@ -76,7 +75,6 @@ let interactions = {
     }, 
     checkForCheckIn: async (req: Request, res: Response) => {
         const userId = (req as any).user.sub;
-            
         const { rows } = await pool.query(
         "SELECT id, streak, last_checkin, time_zone FROM users WHERE id = $1",
         [userId]
@@ -89,16 +87,17 @@ let interactions = {
         let checkin = DateTime.fromJSDate(user.last_checkin).setZone(user.time_zone).startOf("day");
         let today  = DateTime.now().setZone(user.time_zone).startOf("day");
         
-        const diff = today.diff(checkin, 'days').days
+        const diff = diffBetweenDays(user.last_checkin, getDate())
+
         if(diff>1){
             const updateQuery = `
                 UPDATE users
                 SET streak = $1,
-                    last_checkin = NOW()
+                    last_checkin = $3
                 WHERE id = $2
                 RETURNING *;
             `;
-            const updateValues = [1, user.id];
+            const updateValues = [1, user.id, getDate()];
             const result = await pool.query(updateQuery, updateValues);
             return res.status(200).json({
                 reset: true,
@@ -404,9 +403,6 @@ let interactions = {
             
             const weeklyProgressPercentage = count / totalGoals;
 
-
-            console.log("Week of:", newStartOfWeek);
-            console.log(userGoals.rows[0].weeklydatastats, "Total Goals");
 
             // i need to save this weekly data in the backend 
 

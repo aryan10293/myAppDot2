@@ -8,6 +8,7 @@ import Notes from "../components/Notes";
 import SmallCard from "../components/SmallCard";
 import Achievements from "../components/Achievements";
 import AccountInfo from "../components/AccountInfo";
+import useProfileCheckin from "../customHook/useProfileCheckin";
 import { useEffect } from "react";
 
 const buddies = [
@@ -30,6 +31,13 @@ export default function Profile(): React.JSX.Element {
       setStreak(user.user.streak);
     }
   }, [user]);
+
+  const profileCheckin = useProfileCheckin();
+
+  useEffect(() => {
+    profileCheckin.mutate();
+  }, []);
+
 
 
   const checkIn = async () => {
