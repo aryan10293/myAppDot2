@@ -1,10 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 
-function useWeeklyProgress()  {
+
+function useWeeklyProgress({ goalname }: { goalname: string })  {
     const navigate = useNavigate();
     return useQuery({
-        queryKey: ["weeklyprogress", ],
+        queryKey: ["weeklyprogress", goalname],
         queryFn: async () => {
         const response = await fetch(`http://localhost:2050/weeklyprogress`, {
             method: "PATCH",
@@ -12,6 +13,9 @@ function useWeeklyProgress()  {
                 "Content-Type": "application/json",
             },
             credentials: "include",
+             body: JSON.stringify({
+                goalname: goalname,
+            })
         });
         if (response.status === 401) {
             navigate("/login");

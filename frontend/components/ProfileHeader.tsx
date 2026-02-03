@@ -10,9 +10,8 @@ function ProfileHeader(props): React.JSX.Element {
     const navigate = useNavigate();
     const { data: goals, isLoading } = useGoals();
     const { data: user } = useUser();
-    const {data: data, isLoading: weeklyProgressLoading} = useWeeklyProgress()
+    const {data: data, isLoading: weeklyProgressLoading} = useWeeklyProgress({goalname:" "})
     const loginUser = user?.user || user || {};
-
     if (!loginUser) {
       return <span>Loading...</span>
     }

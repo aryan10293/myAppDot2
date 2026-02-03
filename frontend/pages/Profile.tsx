@@ -24,7 +24,7 @@ const buddies = [
 export default function Profile(): React.JSX.Element {
   const navigate = useNavigate();
   const { data: user, isLoading, refetch } = useUser();
-  const [streak, setStreak] = useState<number>(user?.user.streak);
+  const [streak, setStreak] = useState<number>(0);
 
   useEffect(() => {
     if (user?.user?.streak !== undefined) {

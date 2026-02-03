@@ -368,6 +368,9 @@ let interactions = {
             const lmao = theStartOfWeek.year;
             const newStartOfWeek = `${theStartOfWeek.year}-${theStartOfWeek.month.toString().padStart(2, '0')}-${theStartOfWeek.day.toString().padStart(2, '0')}`;
             let count = 0
+
+            console.log(newStartOfWeek)
+
             
             for(let i = 0; i<checkindata.length; i++){
                 for(let j = 0; j<checkindata[i].length; j++){
@@ -383,9 +386,15 @@ let interactions = {
 
 
 
+
             const updateQuery = `
                     UPDATE goals
-                    SET weeklydatastats = $2
+                   SET weeklydatastats = jsonb_set(
+                    COALESCE(weeklydatastats, '{}'::jsonb),
+                    ARRAY[$4],
+                    $2::jsonb,
+                    true
+                    )
                     WHERE urlname = $3 AND userid = $1
                     RETURNING *;
             `;
@@ -393,8 +402,7 @@ let interactions = {
             // fix the update query to update the weekly data stats
             // 
 
-            // const updateValues = [userId, weeklyProgressPercentage, goalname];
-            // const result = await pool.query(updateQuery, updateValues);
+
             // Save weekly progress data to the database
 
 
@@ -402,6 +410,11 @@ let interactions = {
             const totalGoals = userGoals.rows.length * 7;
             
             const weeklyProgressPercentage = count / totalGoals;
+            console.log(req.body)
+            const updateValues = [userId, weeklyProgressPercentage, req.body.goalname, newStartOfWeek];
+            const result = await pool.query(updateQuery, updateValues);
+
+            console.log(weeklyProgressPercentage, "this is the count of check ins for the week")
 
 
             // i need to save this weekly data in the backend 

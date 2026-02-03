@@ -2,13 +2,17 @@ import React from 'react'
 import { useParams } from "react-router-dom";
 import useOneGoal from '../customHook/getOneGoal';
 import useTrackWeekData from '../customHook/useTrackWeekData';
+import useWeeklyProgress from '../customHook/useWeeklyProgress';
 function TrackProgress() {
   const { goalname } = useParams<{ goalname: string }>();
   const { data: goal, isLoading } = useOneGoal(goalname || '');
-  const { data: weekData, isLoading: isWeekDataLoading } = useTrackWeekData(goalname || '');
-if (isWeekDataLoading) {
-    return <div>Loading week data...</div>;
-  }
+  //const { data: weekData, isLoading: isWeekDataLoading } = useTrackWeekData(goalname || '');
+  
+  const { data: weeklyProgress, isLoading: isWeeklyProgressLoading } = useWeeklyProgress({ goalname: goalname || ' ' });
+
+if(isWeeklyProgressLoading) {
+    return <div>Loading weekly progress...</div>;
+}
   
   console.log("Goal Name:", goalname);
   if (isLoading) {
