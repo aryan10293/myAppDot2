@@ -24,7 +24,6 @@ router.patch("/checkforcheckin", requireAuth, interactions.checkForCheckIn);
 router.patch("/goal/:id", requireAuth, interactions.editGoal);
 router.patch("/checkin/:goalname", requireAuth, interactions.goalCheckIn);
 router.patch("/history/:goalname", requireAuth, interactions.history);
-router.patch('/trackweeklyprogress/:goalname', requireAuth, interactions.trackWeeklyProgress);
 
 router.delete("/goal/:goalname", requireAuth, interactions.deleteGoal);
 

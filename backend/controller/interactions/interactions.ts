@@ -331,9 +331,6 @@ let interactions = {
                 let day = parseInt(checkInDates[i].split('-')[2]);
 
                 if(month === currentMonth && year === theStartOfWeek.year){
-                    console.log('entered month condition')
-                    console.log(checkInDates[i], 'this is today date')
-                    console.log(day, "this is the day")
                     currentMonthArray[day-1] = true;
                 }
 
@@ -364,6 +361,7 @@ let interactions = {
             
             const theStartOfWeek: any = DateTime.fromJSDate(start.toJSDate());
             const virgil = theStartOfWeek.month;
+            console.log(virgil, 'this is virgil');
             const imSlow = theStartOfWeek.day;
             const lmao = theStartOfWeek.year;
             const newStartOfWeek = `${theStartOfWeek.year}-${theStartOfWeek.month.toString().padStart(2, '0')}-${theStartOfWeek.day.toString().padStart(2, '0')}`;
@@ -389,62 +387,37 @@ let interactions = {
 
             const updateQuery = `
                     UPDATE goals
-                   SET weeklydatastats = jsonb_set(
+                    SET weeklydatastats = jsonb_set(
                     COALESCE(weeklydatastats, '{}'::jsonb),
                     ARRAY[$4],
                     $2::jsonb,
                     true
+                    ), 
+                    monthlydatastats = jsonb_set(
+                        COALESCE(monthlydatastats, '{}'::jsonb),
+                        ARRAY[$5],
+                        $6::jsonb,
+                        true
                     )
                     WHERE urlname = $3 AND userid = $1
                     RETURNING *;
             `;
 
-            // fix the update query to update the weekly data stats
-            // 
-
-
-            // Save weekly progress data to the database
-
-
-
-            const totalGoals = userGoals.rows.length * 7;
+            const totalWeeklyGoals = userGoals.rows.length * 7;
+            const monthlyProgressPercentage = count / (totalWeeklyGoals * 4);
             
-            const weeklyProgressPercentage = count / totalGoals;
-            console.log(req.body)
-            const updateValues = [userId, weeklyProgressPercentage, req.body.goalname, newStartOfWeek];
+            const weeklyProgressPercentage = count / totalWeeklyGoals;
+  
+            const updateValues = [userId, weeklyProgressPercentage,  req.body.goalname, newStartOfWeek, `${virgil}`, monthlyProgressPercentage];
             const result = await pool.query(updateQuery, updateValues);
 
-            console.log(weeklyProgressPercentage, "this is the count of check ins for the week")
-
-
-            // i need to save this weekly data in the backend 
-
-            res.status(200).json({ weeklyProgressPercentage: weeklyProgressPercentage})
+            res.status(200).json({ weeklyProgressPercentage: weeklyProgressPercentage, monthlyProgressPercentage: monthlyProgressPercentage})
             
         } catch (error) {
             console.log(error)
             res.status(500).send({error})
         }
 
-    },trackWeeklyProgress: async (req:Request ,res:Response) =>{
-        try {
-            const userId = (req as any).user.sub;
-            const userGoals = await pool.query('SELECT * FROM goals WHERE userid = $1', [userId]);
-
-            console.log(userGoals.rows, "ertybguhinjmokjinhubgyvftgbuhinjhbugvyf")
-            res.status(200).json({ weeklyProgressPercentage: 'this does work'})
-
-
-
-            
-
-        
-
-        } catch (error) {
-            console.error(error);
-            return res.status(500).json({ message: error });
-        }
-        
     },trackMonthProgress: async (req:Request ,res:Response) => {
         // prolly just do the same thing as weekly progress for the goals but for the month
 
