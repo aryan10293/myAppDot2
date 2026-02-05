@@ -1,6 +1,8 @@
 import pool from "../config/neon";
 import getDate from "../config/getDate";
+
 const createGoalTable = async () => {
+    console.log(getDate(), 'Creating goals table if not exists...');
     try {
         await pool.query(`
             CREATE TABLE IF NOT EXISTS goals (
@@ -17,8 +19,8 @@ const createGoalTable = async () => {
                 longeststreak INTEGER NOT NULL DEFAULT 1,
                 totalcheckins INTEGER NOT NULL DEFAULT 1,
                 privacy VARCHAR(255) NOT NULL,
-                lastcheckindate VARCHAR(255) DEFAULT '${getDate()}',
-                createdDate VARCHAR(255) DEFAULT '${getDate()}'
+                lastcheckindate VARCHAR(255) NOT NULL DEFAULT,
+                createdDate VARCHAR(255) NOT NULL DEFAULT
             );
         `);
     } catch (error) {
