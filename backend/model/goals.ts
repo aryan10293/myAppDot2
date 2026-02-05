@@ -19,8 +19,8 @@ const createGoalTable = async () => {
                 longeststreak INTEGER NOT NULL DEFAULT 1,
                 totalcheckins INTEGER NOT NULL DEFAULT 1,
                 privacy VARCHAR(255) NOT NULL,
-                lastcheckindate VARCHAR(255) NOT NULL DEFAULT,
-                createdDate VARCHAR(255) NOT NULL DEFAULT
+                lastcheckindate VARCHAR(255) NOT NULL,
+                createdDate VARCHAR(255) NOT NULL
             );
         `);
     } catch (error) {

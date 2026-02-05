@@ -361,13 +361,10 @@ let interactions = {
             
             const theStartOfWeek: any = DateTime.fromJSDate(start.toJSDate());
             const virgil = theStartOfWeek.month;
-            console.log(virgil, 'this is virgil');
             const imSlow = theStartOfWeek.day;
             const lmao = theStartOfWeek.year;
             const newStartOfWeek = `${theStartOfWeek.year}-${theStartOfWeek.month.toString().padStart(2, '0')}-${theStartOfWeek.day.toString().padStart(2, '0')}`;
             let count = 0
-
-            console.log(newStartOfWeek)
 
             
             for(let i = 0; i<checkindata.length; i++){
@@ -378,12 +375,6 @@ let interactions = {
                     }
                 }
             }
-
-
-            // we want code here eveything else is fine
-
-
-
 
             const updateQuery = `
                     UPDATE goals
@@ -411,7 +402,7 @@ let interactions = {
             const updateValues = [userId, weeklyProgressPercentage,  req.body.goalname, newStartOfWeek, `${virgil}`, monthlyProgressPercentage];
             const result = await pool.query(updateQuery, updateValues);
 
-            res.status(200).json({ weeklyProgressPercentage: weeklyProgressPercentage, monthlyProgressPercentage: monthlyProgressPercentage})
+            res.status(200).json({ weeklyProgressPercentage: weeklyProgressPercentage})
             
         } catch (error) {
             console.log(error)
