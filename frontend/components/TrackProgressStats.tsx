@@ -62,15 +62,15 @@ function TrackProgressStats({ stats }: TrackProgressStatsProps) {
   }
 
   return (
-    <div className="px-4 sm:px-0 md:mx-auto md:max-w-6xl lg:mx-auto mb-12">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+    <div className="px-3 sm:px-0 md:mx-auto md:max-w-6xl lg:mx-auto mb-12">
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 lg:gap-6">
         {displayStats.map((stat, index) => {
           const colors = getColorClasses(stat.color)
           return (
-            <div key={index} className={`${colors.bg} rounded-xl p-5 sm:p-6 border border-gray-200 hover:shadow-md transition-shadow`}>
+            <div key={index} className={`${colors.bg} rounded-lg sm:rounded-xl p-3 sm:p-5 lg:p-6 border border-gray-200 hover:shadow-md transition-shadow`}>
               {/* Icon and Header */}
-              <div className="flex items-start justify-between mb-3">
-                <span className={`${colors.icon} text-2xl sm:text-3xl`}>{stat.icon}</span>
+              <div className="flex items-start justify-between mb-2 sm:mb-3">
+                <span className={`${colors.icon} text-xl sm:text-2xl lg:text-3xl`}>{stat.icon}</span>
                 {stat.trend && (
                   <div className={`text-xs font-semibold ${stat.trend.isPositive ? 'text-emerald-600' : 'text-rose-600'}`}>
                     {stat.trend.isPositive ? '↑' : '↓'} {stat.trend.value}%
@@ -79,12 +79,12 @@ function TrackProgressStats({ stats }: TrackProgressStatsProps) {
               </div>
 
               {/* Value */}
-              <div className="mb-2">
-                <p className={`text-2xl sm:text-3xl font-bold ${colors.text}`}>{stat.value}</p>
+              <div className="mb-1 sm:mb-2">
+                <p className={`text-lg sm:text-2xl lg:text-3xl font-bold ${colors.text}`}>{stat.value}</p>
               </div>
 
               {/* Label */}
-              <p className="text-xs sm:text-sm text-gray-600 font-medium">{stat.label}</p>
+              <p className="text-xs text-gray-600 font-medium">{stat.label}</p>
             </div>
           )
         })}
